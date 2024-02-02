@@ -15,6 +15,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -22,12 +24,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class SignInActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 1;
     Button googleAuth;
     FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    FirebaseFirestore database = FirebaseFirestore.getInstance();
     GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -68,6 +80,7 @@ public class SignInActivity extends AppCompatActivity {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
+                // TODO
                 // Google Sign In failed, handle the error
             }
         }
@@ -82,10 +95,43 @@ public class SignInActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = auth.getCurrentUser();
-                            Log.d("SignedIn", "onComplete: " + user.getEmail());
+
+                            assert user != null;
+                            DocumentReference docRef = database.collection("users").document(Objects.requireNonNull(user.getUid()));
+
+                            docRef.get()
+                                    .addOnSuccessListener(documentSnapshot -> {
+                                        if (documentSnapshot.exists()) {
+                                            // Document with the specified ID exists
+                                        } else {
+                                            // Document with the specified ID does not exist
+                                            // Create a new users with a first and last name
+                                            Map<String, Object> currentUser = new HashMap<>();
+                                            currentUser.put("email", user.getEmail());
+
+                                            // Add a new document with a generated ID
+                                            docRef.set(currentUser)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        Log.d("Added user", "DocumentSnapshot added with ID: " + docRef.getId());
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Log.w("Added user", "Error adding document", e);
+                                                        }
+                                                    });
+
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.w("Adding user into db", "Error checking document existence", e);
+                                    });
+
                             Intent intent = new Intent(SignInActivity.this, MapActivity.class);
                             startActivity(intent);
+                            finish();
                         } else {
+                            // TODO
                             // Sign in failed, display a message and update the UI
                         }
                     }

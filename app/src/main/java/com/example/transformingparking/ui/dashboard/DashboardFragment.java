@@ -1,15 +1,19 @@
 package com.example.transformingparking.ui.dashboard;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.transformingparking.AddParkingActivity;
+import com.example.transformingparking.R;
 import com.example.transformingparking.databinding.FragmentDashboardBinding;
 
 public class DashboardFragment extends Fragment {
@@ -24,8 +28,14 @@ public class DashboardFragment extends Fragment {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        Button addParkingBtn = root.findViewById(R.id.add_parking_btn);
+        addParkingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent addParkingIntent = new Intent(getActivity(), AddParkingActivity.class);
+                startActivity(addParkingIntent);
+            }
+        });
         return root;
     }
 

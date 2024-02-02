@@ -43,6 +43,5 @@ public class BookingActivity extends AppCompatActivity {
         NumberPicker hours = findViewById(R.id.hours);
         hours.setMaxValue(24);
         hours.setMinValue(0);
-
     }
 }

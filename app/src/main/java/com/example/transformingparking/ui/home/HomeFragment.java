@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.transformingparking.AddParkingActivity;
 import com.example.transformingparking.BookingActivity;
 import com.example.transformingparking.MapActivity;
 import com.example.transformingparking.R;
@@ -31,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -56,9 +58,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
-
-        Button signOutBtn = root.findViewById(R.id.sign_out_btn);
-        signOutBtn.setOnClickListener(v -> signOut());
 
         return root;
     }
@@ -86,20 +85,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 //        finish();
 
         return false;
-    }
-
-    private void signOut() {
-        // Sign out of Firebase
-        auth.signOut();
-
-        // Sign out of Google (optional)
-        GoogleSignIn.getClient(getActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
-                .addOnCompleteListener((Executor) this, task -> {
-                    // Update UI or start login activity
-                    Toast.makeText(getActivity(), "Logged out successfully!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getActivity(), SignInActivity.class));
-                    getActivity().finish();
-                });
     }
 
     @Override
