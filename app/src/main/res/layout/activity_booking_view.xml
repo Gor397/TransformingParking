@@ -18,19 +18,17 @@
                 android:id="@+id/imageView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/parking_pic"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/price1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="20dp"
-                android:text="Price: 30$ per month"
                 android:textSize="20dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView" />
@@ -41,12 +39,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="28dp"
                 android:layout_marginTop="20dp"
-                android:text="Vartishx Pilasosyan"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+                app:layout_constraintTop_toBottomOf="@+id/description1" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/send_request"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -59,14 +56,14 @@
                 tools:ignore="MissingConstraints" />
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/descriptionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="@string/additional_info"
-                android:textSize="20dp"
-                app:layout_constraintStart_toStartOf="@+id/textView2"
-                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="@+id/price1"
+                app:layout_constraintTop_toBottomOf="@+id/price1" />
 
             <NumberPicker
                 android:id="@+id/hours"
@@ -87,13 +84,13 @@
                 tools:ignore="MissingConstraints" />
 
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/description1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Գարաժի դեմը կա կոֆեի ապառատ"
-                app:layout_constraintStart_toStartOf="@+id/textView8"
-                app:layout_constraintTop_toBottomOf="@+id/textView8" />
+                android:text=""
+                app:layout_constraintStart_toStartOf="@+id/descriptionTitle"
+                app:layout_constraintTop_toBottomOf="@+id/descriptionTitle" />
 
             <Button
                 android:id="@+id/back_btn"

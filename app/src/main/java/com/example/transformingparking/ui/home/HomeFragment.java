@@ -2,6 +2,7 @@ package com.example.transformingparking.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +29,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
@@ -41,7 +49,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     private GoogleMap mMap;
     FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     FirebaseUser user;
 
@@ -67,11 +75,32 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
+        // TODO IMPORTANT!!!
         LatLng dilijan = new LatLng(40.7406, 44.8626);
-        LatLng dilijan2 = new LatLng(40.7406, 44.8628);
-        mMap.addMarker(new MarkerOptions().position(dilijan).title("Marker in Dilijan"));
-        mMap.addMarker(new MarkerOptions().position(dilijan2).title("Marker in Dilijan"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dilijan, 17));
+
+        database.collection("parking_spaces")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Map latlng = (Map) document.getData().get("latlng");
+                                String id = document.getId();
+
+                                LatLng location = new LatLng((Double) latlng.get("latitude"), (Double) latlng.get("longitude"));
+                                MarkerOptions markerOptions = new MarkerOptions()
+                                        .position(location)
+                                        .title("Marker " + id);
+
+                                googleMap.addMarker(markerOptions).setTag(id);
+                            }
+                        } else {
+                            Log.d("GettingParkingSpaces", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
         mMap.setOnMarkerClickListener(this);
     }
@@ -79,6 +108,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public boolean onMarkerClick(Marker marker) {
         Intent bookingViewIntent = new Intent(getActivity(), BookingActivity.class);
+        bookingViewIntent.putExtra("markerId", (String) marker.getTag());
 
 //        bookingViewIntent.putExtra("Owner_name", "Vartishax");
         startActivity(bookingViewIntent);

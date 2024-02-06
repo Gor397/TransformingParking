@@ -31,6 +31,7 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder)
      */
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
         private final TextView descriptionTextView;
