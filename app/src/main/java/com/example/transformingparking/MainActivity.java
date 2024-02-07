@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         if (user != null) {
             Intent mapIntent = new Intent(MainActivity.this, MapActivity.class);
             startActivity(mapIntent);
+            Intent serviceIntent = new Intent(this, MyFirebaseService.class);
+            startService(serviceIntent);
             finish();
         }
         else {

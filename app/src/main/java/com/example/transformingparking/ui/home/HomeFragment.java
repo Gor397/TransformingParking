@@ -6,22 +6,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.transformingparking.AddParkingActivity;
 import com.example.transformingparking.BookingActivity;
-import com.example.transformingparking.MapActivity;
 import com.example.transformingparking.R;
-import com.example.transformingparking.SignInActivity;
 import com.example.transformingparking.databinding.FragmentHomeBinding;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,15 +25,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.Executor;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -49,7 +37,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     private GoogleMap mMap;
     FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseFirestore database = FirebaseFirestore.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     FirebaseUser user;
 
@@ -79,7 +67,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         LatLng dilijan = new LatLng(40.7406, 44.8626);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dilijan, 17));
 
-        database.collection("parking_spaces")
+        db.collection("parking_spaces")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

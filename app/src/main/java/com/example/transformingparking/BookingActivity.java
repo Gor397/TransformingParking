@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +20,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -35,9 +40,12 @@ public class BookingActivity extends AppCompatActivity {
     TextView priceView;
     TextView descriptionView;
     Button ownerAccBtn;
+    Button sendRequestBtn;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
+    FirebaseDatabase realtimeDb = FirebaseDatabase.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,7 @@ public class BookingActivity extends AppCompatActivity {
         descriptionView = findViewById(R.id.descriptionTitle);
         imageView = findViewById(R.id.imageView);
         ownerAccBtn = findViewById(R.id.open_profile);
+        sendRequestBtn = findViewById(R.id.send_request);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -99,6 +108,14 @@ public class BookingActivity extends AppCompatActivity {
             }
         });
 
+        NumberPicker minutes = findViewById(R.id.minutes);
+        minutes.setMaxValue(60);
+        minutes.setMinValue(20);
+
+        NumberPicker hours = findViewById(R.id.hours);
+        hours.setMaxValue(24);
+        hours.setMinValue(0);
+
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,13 +133,43 @@ public class BookingActivity extends AppCompatActivity {
             }
         });
 
-        NumberPicker minutes = findViewById(R.id.minutes);
-        minutes.setMaxValue(60);
-        minutes.setMinValue(20);
+        sendRequestBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendRequest(hours.getValue(), minutes.getValue());
+            }
+        });
+    }
 
-        NumberPicker hours = findViewById(R.id.hours);
-        hours.setMaxValue(24);
-        hours.setMinValue(0);
+    private void sendRequest(int hours, int minutes) {
+        ReuestStatusConstants c = new ReuestStatusConstants();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        assert currentUser != null;
+        DatabaseReference myRequests = realtimeDb.getReference(currentUser.getUid());
+        myRequests.child("sent_requests").child(ownerId).setValue(new ParkingRequest(c.AWAITING_REQUEST, hours, minutes)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        DatabaseReference ownerRequests = realtimeDb.getReference(ownerId);
+                        ownerRequests.child("received_requests").child(currentUser.getUid()).setValue(new ParkingRequest(c.AWAITING_REQUEST, hours, minutes)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(BookingActivity.this, "Request Sent!", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(BookingActivity.this, "Failed to send the request!", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(BookingActivity.this, "Failed to send the request!", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     void setOwner() {

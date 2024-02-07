@@ -23,4 +23,7 @@
     <string name="next">Next</string>
     <string name="sign_in_up_with_google">Sign In/Up with Google</string>
     <string name="send_request">Send Request</string>
+    <string name="title_activity_respond_request">RespondRequestActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
