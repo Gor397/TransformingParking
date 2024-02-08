@@ -108,6 +108,7 @@ public class SignInActivity extends AppCompatActivity {
                                             // Create a new users with a first and last name
                                             Map<String, Object> currentUser = new HashMap<>();
                                             currentUser.put("email", user.getEmail());
+                                            currentUser.put("name", user.getDisplayName());
 
                                             // Add a new document with a generated ID
                                             docRef.set(currentUser)

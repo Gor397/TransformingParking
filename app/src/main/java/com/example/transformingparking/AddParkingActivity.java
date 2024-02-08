@@ -7,12 +7,21 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -110,6 +119,16 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
 
                 parkingPic = findViewById(R.id.pic);
 
+//                ViewGroup.LayoutParams picParams = parkingPic.getLayoutParams();
+//                picParams.height = 300;
+//                picParams.width = 300;
+//                parkingPic.setLayoutParams(picParams);
+//
+//                DisplayMetrics displayMetrics = new DisplayMetrics();
+//                getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//                int screenWidth = displayMetrics.widthPixels;
+//                parkingPic.setX((screenWidth - picParams.width) / 2f);
+
                 parkingPic.setOnClickListener(k -> {
                     Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 //                    galleryIntent.putExtra("crop", "true");
@@ -131,7 +150,9 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                     @Override
                     public void onClick(View v) {
                         TextInputEditText additionalInfoField = findViewById(R.id.additional_info);
-                        additionalInfo = additionalInfoField.getText().toString();
+                        additionalInfo = Objects.requireNonNull(additionalInfoField.getText()).toString()
+                                .replaceAll("\\s{2,}", " ")
+                                .replaceAll("([\\n\\r]){2,}", "\n");
 
                         FirebaseUser user = auth.getCurrentUser();
 
@@ -153,6 +174,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
 
                         Intent intent = new Intent(AddParkingActivity.this, MapActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                 });
             }
@@ -167,7 +189,14 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
             if (requestCode == PICK_IMAGE_REQUEST) {
                 selectedImageUri = data.getData();
                 ImageView imageView = findViewById(R.id.pic);
-                Picasso.get().load(selectedImageUri).into(imageView);
+
+                DisplayMetrics displayMetrics = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                int screenWidth = displayMetrics.widthPixels;
+                RequestOptions options = new RequestOptions()
+                        .override(screenWidth, Target.SIZE_ORIGINAL);
+
+                Glide.with(this).load(selectedImageUri).apply(options).into(imageView);
             }
         }
     }

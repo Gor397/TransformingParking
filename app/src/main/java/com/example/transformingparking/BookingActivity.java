@@ -2,10 +2,8 @@ package com.example.transformingparking;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,9 +28,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.Arrays;
-
 public class BookingActivity extends AppCompatActivity {
+    private static final int MIN_RENTING_MINUTES = 20;
     Button back_btn;
     String markerId;
     String ownerId;
@@ -41,12 +39,14 @@ public class BookingActivity extends AppCompatActivity {
     TextView descriptionView;
     Button ownerAccBtn;
     Button sendRequestBtn;
+    TextView costView;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseDatabase realtimeDb = FirebaseDatabase.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,10 +54,11 @@ public class BookingActivity extends AppCompatActivity {
 
         back_btn = findViewById(R.id.back_btn);
         priceView = findViewById(R.id.price1);
-        descriptionView = findViewById(R.id.descriptionTitle);
+        descriptionView = findViewById(R.id.description1);
         imageView = findViewById(R.id.imageView);
         ownerAccBtn = findViewById(R.id.open_profile);
         sendRequestBtn = findViewById(R.id.send_request);
+        costView = findViewById(R.id.cost);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -78,25 +79,25 @@ public class BookingActivity extends AppCompatActivity {
                         ownerId = (String) document.get("user_id");
                         setOwner();
 
-                        priceView.setText("Price: " + price);
+                        priceView.setText("Price: " + price + " dram per hour");
                         descriptionView.setText(description);
-                        imageRef.getBytes(1024 * 1024) // Max size of the image in bytes
-                                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                    @Override
-                                    public void onSuccess(byte[] bytes) {
-                                        // Convert the byte array to a Bitmap
-                                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
-                                        // Display the Bitmap in the ImageView
-                                        imageView.setImageBitmap(bitmap);
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        // TODO Handle errors
-                                    }
-                                });
+                        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                // Load the image into the ImageView using Glide
+                                Glide.with(BookingActivity.this).load(uri).into(imageView);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Handle any errors
+                            }
+                        });
+
+                        int cost = (int) (price / 60 * MIN_RENTING_MINUTES);
+                        costView.setText("Total cost: " + cost + " dram");
+
                     } else {
                         // Document does not exist
                         // TODO Handle the case here
@@ -109,12 +110,37 @@ public class BookingActivity extends AppCompatActivity {
         });
 
         NumberPicker minutes = findViewById(R.id.minutes);
-        minutes.setMaxValue(60);
-        minutes.setMinValue(20);
+        minutes.setMaxValue(59);
+        minutes.setMinValue(MIN_RENTING_MINUTES);
 
         NumberPicker hours = findViewById(R.id.hours);
-        hours.setMaxValue(24);
+        hours.setMaxValue(23);
         hours.setMinValue(0);
+
+        hours.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                if (newVal != 0) {
+                    minutes.setMinValue(0);
+                } else {
+                    minutes.setMinValue(MIN_RENTING_MINUTES);
+                }
+                int price = Integer.parseInt(((String) priceView.getText()).replaceAll("\\D", ""));
+                int cost = price / 60 * minutes.getValue() + price * newVal;
+                costView.setText("Total cost: " + cost + " dram");
+            }
+        });
+
+        minutes.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                int price = Integer.parseInt(((String) priceView.getText()).replaceAll("\\D", ""));
+                int cost = price / 60 * newVal + price * hours.getValue();
+                costView.setText("Total cost: " + cost + " dram");
+            }
+        });
 
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,7 +168,7 @@ public class BookingActivity extends AppCompatActivity {
     }
 
     private void sendRequest(int hours, int minutes) {
-        ReuestStatusConstants c = new ReuestStatusConstants();
+        RequestStatusConstants c = new RequestStatusConstants();
         FirebaseUser currentUser = auth.getCurrentUser();
         assert currentUser != null;
         DatabaseReference myRequests = realtimeDb.getReference(currentUser.getUid());
@@ -181,8 +207,7 @@ public class BookingActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         String name = (String) document.get("name");
-                        String lastname = (String) document.get("lastname");
-                        ownerAccBtn.setText(name + " " + lastname);
+                        ownerAccBtn.setText(name);
                     }
                 } else {
                     // Error getting document

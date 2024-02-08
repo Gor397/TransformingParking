@@ -1,7 +1,11 @@
 package com.example.transformingparking.ui.dashboard;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +16,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.transformingparking.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,6 +33,8 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
 
     private List<Map<String, Object>> localDataSet;
     StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+    View view;
+    Context context;
 
     /**
      * Provide a reference to the type of views that you are using
@@ -66,35 +75,33 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view, which defines the UI of the list item
-        View view = LayoutInflater.from(viewGroup.getContext())
+        view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.parking_row_item, viewGroup, false);
 
         return new ViewHolder(view);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        viewHolder.getTextView().setText(Objects.requireNonNull(localDataSet.get(position).get("price")).toString());
+        viewHolder.getTextView()
+                .setText(Objects.requireNonNull(localDataSet.get(position).get("price")).toString() + " dram per hour");
         viewHolder.getDescriptionTextView().setText(Objects.requireNonNull(localDataSet.get(position).get("additional_info")).toString());
         StorageReference imageRef = storageReference.child("parking_pics").child((String) Objects.requireNonNull(localDataSet.get(position).get("id")));
-        imageRef.getBytes(1024 * 1024) // Max size of the image in bytes
-                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        // Convert the byte array to a Bitmap
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
-                        // Display the Bitmap in the ImageView
-                        viewHolder.getImageView().setImageBitmap(bitmap);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // TODO Handle errors
-                    }
-                });
+        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                // Load the image into the ImageView using Glide
+                Glide.with(view).load(uri).into(viewHolder.getImageView());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // TODO Handle any errors
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
