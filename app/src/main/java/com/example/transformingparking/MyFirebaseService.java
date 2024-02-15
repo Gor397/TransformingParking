@@ -1,13 +1,17 @@
 package com.example.transformingparking;
 
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -65,21 +69,33 @@ public class MyFirebaseService extends Service {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
                 // Handle new call requests
                 if (c.AWAITING_REQUEST == dataSnapshot.child("status").getValue(Long.class)) {
-                    Intent responseRequestIntent = new Intent(MyFirebaseService.this, RespondRequestActivity.class);
+//                    Intent responseRequestIntent = new Intent(MyFirebaseService.this, RespondRequestActivity.class);
                     String userId = dataSnapshot.getKey();
                     db.collection("users").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @SuppressLint("ScheduleExactAlarm")
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             if (task.isSuccessful()) {
                                 DocumentSnapshot document = task.getResult();
                                 if (document.exists()) {
-                                    // TODO set name and last name in the layout
                                     String name = (String) document.get("name");
-                                    responseRequestIntent.putExtra("name", name);
-                                    responseRequestIntent.putExtra("hours", dataSnapshot.child("hours").getValue(Long.class));
-                                    responseRequestIntent.putExtra("minutes", dataSnapshot.child("minutes").getValue(Long.class));
-                                    responseRequestIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(responseRequestIntent);
+//                                    responseRequestIntent.putExtra("name", name);
+//                                    responseRequestIntent.putExtra("hours", dataSnapshot.child("hours").getValue(Long.class));
+//                                    responseRequestIntent.putExtra("minutes", dataSnapshot.child("minutes").getValue(Long.class));
+//                                    responseRequestIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                    startActivity(responseRequestIntent);
+
+                                    Intent intent = new Intent(MyFirebaseService.this, MyBroadcastReceiver.class);
+                                    intent.putExtra("name", name);
+                                    intent.putExtra("hours", dataSnapshot.child("hours").getValue(Long.class));
+                                    intent.putExtra("minutes", dataSnapshot.child("minutes").getValue(Long.class));
+                                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+                                    try {
+                                        pendingIntent.send();
+                                    } catch (PendingIntent.CanceledException e) {
+                                        throw new RuntimeException(e);
+                                    }
                                 }
                             } else {
                                 // Error getting document

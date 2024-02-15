@@ -193,7 +193,7 @@ public class BookingActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(BookingActivity.this, "Failed to send the request!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(BookingActivity.this, "Failed to send the request! ", Toast.LENGTH_LONG).show();
                     }
                 });
     }
