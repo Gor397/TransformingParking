@@ -28,6 +28,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.DecimalFormat;
+
 public class BookingActivity extends AppCompatActivity {
     private static final int MIN_RENTING_MINUTES = 20;
     Button back_btn;
@@ -95,7 +97,8 @@ public class BookingActivity extends AppCompatActivity {
                             }
                         });
 
-                        int cost = (int) (price / 60 * MIN_RENTING_MINUTES);
+                        DecimalFormat df = new DecimalFormat("#");
+                        int cost = (int) (Double.parseDouble(df.format((double) price / 60 * MIN_RENTING_MINUTES)));
                         costView.setText("Total cost: " + cost + " dram");
 
                     } else {
@@ -127,7 +130,8 @@ public class BookingActivity extends AppCompatActivity {
                     minutes.setMinValue(MIN_RENTING_MINUTES);
                 }
                 int price = Integer.parseInt(((String) priceView.getText()).replaceAll("\\D", ""));
-                int cost = price / 60 * minutes.getValue() + price * newVal;
+                DecimalFormat df = new DecimalFormat("#");
+                int cost = (int) (Double.parseDouble(df.format((double) price / 60 * minutes.getValue())) + price * newVal);
                 costView.setText("Total cost: " + cost + " dram");
             }
         });
@@ -137,7 +141,8 @@ public class BookingActivity extends AppCompatActivity {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 int price = Integer.parseInt(((String) priceView.getText()).replaceAll("\\D", ""));
-                int cost = price / 60 * newVal + price * hours.getValue();
+                DecimalFormat df = new DecimalFormat("#");
+                int cost = (int) (Double.parseDouble(df.format((double) price / 60 * newVal)) + price * hours.getValue());
                 costView.setText("Total cost: " + cost + " dram");
             }
         });

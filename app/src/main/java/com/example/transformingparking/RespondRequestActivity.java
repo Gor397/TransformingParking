@@ -63,8 +63,10 @@ public class RespondRequestActivity extends AppCompatActivity {
         String duration;
         if (hours == 0) {
             duration = minutes + " minutes";
+        } else if (minutes == 0) {
+            duration = hours + " hours";
         } else {
-            duration = hours + " hours" + minutes + " minutes";
+            duration = hours + " hours " + minutes + " minutes";
         }
         String name = intent.getStringExtra("name");
         parkingId = intent.getStringExtra("parkingId");
