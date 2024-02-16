@@ -5,15 +5,34 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.transformingparking.databinding.ActivityRespondRequestBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RespondRequestActivity extends AppCompatActivity {
     private ActivityRespondRequestBinding binding;
+    FirebaseFirestore database = FirebaseFirestore.getInstance();
+    FirebaseDatabase realtimeDb = FirebaseDatabase.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    String parkingId;
+    String userId;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -48,6 +67,8 @@ public class RespondRequestActivity extends AppCompatActivity {
             duration = hours + " hours" + minutes + " minutes";
         }
         String name = intent.getStringExtra("name");
+        parkingId = intent.getStringExtra("parkingId");
+        userId = intent.getStringExtra("userId");
 
         binding.duration.setText(duration);
         binding.name.setText(name);
@@ -55,14 +76,93 @@ public class RespondRequestActivity extends AppCompatActivity {
         binding.acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                accept();
             }
         });
         binding.rejectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                reject();
             }
         });
+    }
+
+    public void accept() {
+        RequestStatusConstants c = new RequestStatusConstants();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        assert currentUser != null;
+        DatabaseReference myRequests = realtimeDb.getReference(currentUser.getUid());
+
+        myRequests.child("received_requests").child(userId).child("status").setValue(c.ACCEPTED_REQUEST).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        DatabaseReference ownerRequests = realtimeDb.getReference(userId);
+                        ownerRequests.child("sent_requests").child(currentUser.getUid()).child("status").setValue(c.ACCEPTED_REQUEST).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Map<String, Object> updates = new HashMap<>();
+                                        updates.put("status", false);
+                                        database.collection("parking_spaces").document(parkingId).update(updates)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        Toast.makeText(RespondRequestActivity.this, "Request Accepted!", Toast.LENGTH_SHORT).show();
+
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(RespondRequestActivity.this, "Failed to accept the request!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(RespondRequestActivity.this, "Failed to accept the request!", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(RespondRequestActivity.this, "Failed to accept the request! ", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    public void reject() {
+        RequestStatusConstants c = new RequestStatusConstants();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        assert currentUser != null;
+        DatabaseReference myRequests = realtimeDb.getReference(currentUser.getUid());
+
+        myRequests.child("received_requests").child(userId).child("status").setValue(c.REJECTED_REQUEST).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        DatabaseReference ownerRequests = realtimeDb.getReference(userId);
+                        ownerRequests.child("sent_requests").child(currentUser.getUid()).child("status").setValue(c.REJECTED_REQUEST).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(RespondRequestActivity.this, "Request Rejected!", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(RespondRequestActivity.this, "Failed to reject the request!", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(RespondRequestActivity.this, "Failed to reject the request! ", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }

@@ -74,6 +74,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
+                                if (Boolean.FALSE.equals(document.get("status", Boolean.class))) {
+                                    continue;
+                                }
                                 Map latlng = (Map) document.getData().get("latlng");
                                 String id = document.getId();
 

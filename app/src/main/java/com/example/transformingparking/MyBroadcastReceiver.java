@@ -5,17 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import java.util.Objects;
+
 public class MyBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        String name = intent.getStringExtra("name");
-        long hours = intent.getLongExtra("hours", 0);
-        long minutes = intent.getLongExtra("minutes", 0);
-
         Intent responseRequestIntent = new Intent(context, RespondRequestActivity.class);
-        responseRequestIntent.putExtra("name", name);
-        responseRequestIntent.putExtra("hours", hours);
-        responseRequestIntent.putExtra("minutes", minutes);
+        responseRequestIntent.putExtras(Objects.requireNonNull(intent.getExtras()));
         responseRequestIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(responseRequestIntent);
     }

@@ -86,6 +86,8 @@ public class MyFirebaseService extends Service {
 //                                    startActivity(responseRequestIntent);
 
                                     Intent intent = new Intent(MyFirebaseService.this, MyBroadcastReceiver.class);
+                                    intent.putExtra("userId", userId);
+                                    intent.putExtra("parkingId", dataSnapshot.child("parking_id").getValue(String.class));
                                     intent.putExtra("name", name);
                                     intent.putExtra("hours", dataSnapshot.child("hours").getValue(Long.class));
                                     intent.putExtra("minutes", dataSnapshot.child("minutes").getValue(Long.class));
@@ -156,8 +158,7 @@ public class MyFirebaseService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle("Foreground Service")
                 .setContentText("Your service is running in the foreground")
-                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-                .setContentIntent(pendingIntent);
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp);
 
         return builder.build();
     }

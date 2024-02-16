@@ -172,11 +172,11 @@ public class BookingActivity extends AppCompatActivity {
         FirebaseUser currentUser = auth.getCurrentUser();
         assert currentUser != null;
         DatabaseReference myRequests = realtimeDb.getReference(currentUser.getUid());
-        myRequests.child("sent_requests").child(ownerId).setValue(new ParkingRequest(c.AWAITING_REQUEST, hours, minutes)).addOnSuccessListener(new OnSuccessListener<Void>() {
+        myRequests.child("sent_requests").child(ownerId).setValue(new ParkingRequest(markerId, c.AWAITING_REQUEST, hours, minutes)).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         DatabaseReference ownerRequests = realtimeDb.getReference(ownerId);
-                        ownerRequests.child("received_requests").child(currentUser.getUid()).setValue(new ParkingRequest(c.AWAITING_REQUEST, hours, minutes)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        ownerRequests.child("received_requests").child(currentUser.getUid()).setValue(new ParkingRequest(markerId, c.AWAITING_REQUEST, hours, minutes)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(BookingActivity.this, "Request Sent!", Toast.LENGTH_SHORT).show();
