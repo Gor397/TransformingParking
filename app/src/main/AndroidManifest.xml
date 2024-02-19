@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -33,6 +32,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TransformingParking"
         tools:targetApi="31">
+        <activity
+            android:name=".MyTicket"
+            android:exported="false" />
         <activity
             android:name=".RespondRequestActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -67,7 +69,9 @@
         <activity
             android:name=".BookingActivity"
             android:exported="false" />
-        <receiver android:name=".MyBroadcastReceiver"
+
+        <receiver
+            android:name=".MyBroadcastReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.SCREEN_ON" />

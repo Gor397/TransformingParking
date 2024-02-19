@@ -1,6 +1,7 @@
 package com.example.transformingparking;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -28,11 +30,17 @@ import com.example.transformingparking.databinding.ActivityMapBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.concurrent.Executor;
+
 public class MapActivity extends AppCompatActivity {
 
     private ActivityMapBinding binding;
+    private Button signOutBtn;
+    private Button qrBtn;
+    private Button scanQrBtn;
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
@@ -50,7 +58,24 @@ public class MapActivity extends AppCompatActivity {
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        Button signOutBtn = findViewById(R.id.sign_out_btn);
+        scanQrBtn = findViewById(R.id.scan_qr_btn);
+        scanQrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startQRCodeScanner();
+            }
+        });
+
+        qrBtn = findViewById(R.id.qr_btn);
+        qrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapActivity.this, MyTicket.class);
+                startActivity(intent);
+            }
+        });
+
+        signOutBtn = findViewById(R.id.sign_out_btn);
         signOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +104,37 @@ public class MapActivity extends AppCompatActivity {
             finish();
         }
     }
+
+    private void startQRCodeScanner() {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setOrientationLocked(false);
+        integrator.initiateScan();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+            } else {
+                // Handle scanned QR code data
+                String scannedData = result.getContents();
+                Toast.makeText(this, "Scanned: " + scannedData, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Handle configuration changes here
+    }
+
 
     @Override
     protected void onResume() {
