@@ -1,139 +1,103 @@
 package com.example.transformingparking;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class SignInActivity extends AppCompatActivity {
-    private static final int RC_SIGN_IN = 1;
-    Button googleAuth;
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseFirestore database = FirebaseFirestore.getInstance();
-    GoogleSignInClient mGoogleSignInClient;
+
+    private EditText phoneNumberEditText;
+    private Button signInButton;
+
+    private FirebaseAuth mAuth;
+    private String mVerificationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        googleAuth = findViewById(R.id.googleAuth_btn);
+        phoneNumberEditText = findViewById(R.id.editTextPhone);
+        signInButton = findViewById(R.id.button);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        mAuth = FirebaseAuth.getInstance();
 
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        googleAuth.setOnClickListener(new View.OnClickListener() {
+        signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                signIn(mGoogleSignInClient);
+            public void onClick(View view) {
+                String phoneNumber = phoneNumberEditText.getText().toString().trim();
+                if (!phoneNumber.isEmpty()) {
+                    sendVerificationCode(phoneNumber);
+                } else {
+                    Toast.makeText(SignInActivity.this, "Please enter a phone number", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
-    private void signIn(GoogleSignInClient mGoogleSignInClient) {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (ApiException e) {
-                // TODO
-                // Google Sign In failed, handle the error
-            }
-        }
-    }
-
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        auth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+    private void sendVerificationCode(String phoneNumber) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                phoneNumber,
+                60,
+                TimeUnit.SECONDS,
+                this,
+                new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+                        signInWithPhoneAuthCredential(phoneAuthCredential);
+                    }
+
+                    @Override
+                    public void onVerificationFailed(@NonNull FirebaseException e) {
+                        Toast.makeText(SignInActivity.this, "Verification Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCodeSent(@NonNull String verificationId,
+                                           @NonNull PhoneAuthProvider.ForceResendingToken token) {
+                        mVerificationId = verificationId;
+                        // Move to the next activity to enter the verification code
+                        Intent intent = new Intent(SignInActivity.this, VerifyCodeActivity.class);
+                        intent.putExtra("verificationId", mVerificationId);
+                        startActivity(intent);
+                    }
+                });
+    }
+
+    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = auth.getCurrentUser();
-
-                            assert user != null;
-                            DocumentReference docRef = database.collection("users").document(Objects.requireNonNull(user.getUid()));
-
-                            docRef.get()
-                                    .addOnSuccessListener(documentSnapshot -> {
-                                        if (documentSnapshot.exists()) {
-                                            // Document with the specified ID exists
-                                        } else {
-                                            // Document with the specified ID does not exist
-                                            // Create a new users with a first and last name
-                                            Map<String, Object> currentUser = new HashMap<>();
-                                            currentUser.put("email", user.getEmail());
-                                            currentUser.put("name", user.getDisplayName());
-
-                                            // Add a new document with a generated ID
-                                            docRef.set(currentUser)
-                                                    .addOnSuccessListener(aVoid -> {
-                                                        Log.d("Added user", "DocumentSnapshot added with ID: " + docRef.getId());
-                                                    })
-                                                    .addOnFailureListener(new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception e) {
-                                                            Log.w("Added user", "Error adding document", e);
-                                                        }
-                                                    });
-
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.w("Adding user into db", "Error checking document existence", e);
-                                    });
-
+                            // Sign in success
                             Intent intent = new Intent(SignInActivity.this, MapActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
-                            // TODO
-                            // Sign in failed, display a message and update the UI
+                            // Sign in failed
+                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                Toast.makeText(SignInActivity.this, "Invalid Verification Code", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(SignInActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });

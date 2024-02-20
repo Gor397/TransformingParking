@@ -66,15 +66,6 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        qrBtn = findViewById(R.id.qr_btn);
-        qrBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MapActivity.this, MyTicket.class);
-                startActivity(intent);
-            }
-        });
-
         signOutBtn = findViewById(R.id.sign_out_btn);
         signOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override

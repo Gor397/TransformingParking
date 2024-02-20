@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,8 +18,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,12 +31,11 @@ public class BookingActivity extends AppCompatActivity {
     Button back_btn;
     String markerId;
     String ownerId;
-    String[] owner;
     ImageView imageView;
     TextView priceView;
     TextView descriptionView;
     Button ownerAccBtn;
-    Button sendRequestBtn;
+    Button directionsBtn;
     TextView costView;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -59,8 +54,7 @@ public class BookingActivity extends AppCompatActivity {
         descriptionView = findViewById(R.id.description1);
         imageView = findViewById(R.id.imageView);
         ownerAccBtn = findViewById(R.id.open_profile);
-        sendRequestBtn = findViewById(R.id.send_request);
-        costView = findViewById(R.id.cost);
+        directionsBtn = findViewById(R.id.directions_btn);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -112,41 +106,6 @@ public class BookingActivity extends AppCompatActivity {
             }
         });
 
-        NumberPicker minutes = findViewById(R.id.minutes);
-        minutes.setMaxValue(59);
-        minutes.setMinValue(MIN_RENTING_MINUTES);
-
-        NumberPicker hours = findViewById(R.id.hours);
-        hours.setMaxValue(23);
-        hours.setMinValue(0);
-
-        hours.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                if (newVal != 0) {
-                    minutes.setMinValue(0);
-                } else {
-                    minutes.setMinValue(MIN_RENTING_MINUTES);
-                }
-                int price = Integer.parseInt(((String) priceView.getText()).replaceAll("\\D", ""));
-                DecimalFormat df = new DecimalFormat("#");
-                int cost = (int) (Double.parseDouble(df.format((double) price / 60 * minutes.getValue())) + price * newVal);
-                costView.setText("Total cost: " + cost + " dram");
-            }
-        });
-
-        minutes.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                int price = Integer.parseInt(((String) priceView.getText()).replaceAll("\\D", ""));
-                DecimalFormat df = new DecimalFormat("#");
-                int cost = (int) (Double.parseDouble(df.format((double) price / 60 * newVal)) + price * hours.getValue());
-                costView.setText("Total cost: " + cost + " dram");
-            }
-        });
-
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -163,44 +122,6 @@ public class BookingActivity extends AppCompatActivity {
                 startActivity(profileIntent);
             }
         });
-
-        sendRequestBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendRequest(hours.getValue(), minutes.getValue());
-            }
-        });
-    }
-
-    private void sendRequest(int hours, int minutes) {
-        RequestStatusConstants c = new RequestStatusConstants();
-        FirebaseUser currentUser = auth.getCurrentUser();
-        assert currentUser != null;
-        DatabaseReference myRequests = realtimeDb.getReference(currentUser.getUid());
-        myRequests.child("sent_requests").child(ownerId).setValue(new ParkingRequest(markerId, c.AWAITING_REQUEST, hours, minutes)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        DatabaseReference ownerRequests = realtimeDb.getReference(ownerId);
-                        ownerRequests.child("received_requests").child(currentUser.getUid()).setValue(new ParkingRequest(markerId, c.AWAITING_REQUEST, hours, minutes)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(BookingActivity.this, "Request Sent!", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(BookingActivity.this, "Failed to send the request!", Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(BookingActivity.this, "Failed to send the request! ", Toast.LENGTH_LONG).show();
-                    }
-                });
     }
 
     void setOwner() {
