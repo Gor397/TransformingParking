@@ -47,15 +47,15 @@ public class RespondRequestActivity extends AppCompatActivity {
         binding = ActivityRespondRequestBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.videoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.money));
-        binding.videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                // Restart video playback when completed
-                binding.videoView.start();
-            }
-        });
-        binding.videoView.start();
+//        binding.videoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.money));
+//        binding.videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(MediaPlayer mp) {
+//                // Restart video playback when completed
+//                binding.videoView.start();
+//            }
+//        });
+//        binding.videoView.start();
 
         Intent intent = getIntent();
         long hours = intent.getLongExtra("hours", 0);
@@ -79,12 +79,14 @@ public class RespondRequestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 accept();
+                finish();
             }
         });
         binding.rejectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 reject();
+                finish();
             }
         });
     }
@@ -109,7 +111,6 @@ public class RespondRequestActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onSuccess(Void unused) {
                                                         Toast.makeText(RespondRequestActivity.this, "Request Accepted!", Toast.LENGTH_SHORT).show();
-
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {

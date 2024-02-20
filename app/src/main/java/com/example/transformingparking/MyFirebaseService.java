@@ -1,17 +1,15 @@
 package com.example.transformingparking;
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +31,8 @@ public class MyFirebaseService extends Service {
 
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_ID = "NTFCHNLID";
-    private DatabaseReference callsRef;
+    private DatabaseReference receivedRef;
+    private DatabaseReference sentRef;
     private ChildEventListener childEventListener;
     private FirebaseUser currentUser;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -47,7 +46,8 @@ public class MyFirebaseService extends Service {
         super.onCreate();
         currentUser = auth.getCurrentUser();
         // Initialize Firebase Realtime Database reference
-        callsRef = FirebaseDatabase.getInstance().getReference(currentUser.getUid()).child("received_requests");
+        receivedRef = FirebaseDatabase.getInstance().getReference(currentUser.getUid()).child("received_requests");
+        sentRef = FirebaseDatabase.getInstance().getReference(currentUser.getUid()).child("sent_requests");
     }
 
     @Override
@@ -58,11 +58,12 @@ public class MyFirebaseService extends Service {
             notificationManager.createNotificationChannel(channel);
         }
         startForeground(NOTIFICATION_ID, createNotification());
-        startListeningForCalls();
+        startListeningForRequests();
+        startListeningForAnswers();
         return START_STICKY;
     }
 
-    private void startListeningForCalls() {
+    private void startListeningForRequests() {
         // Create a ChildEventListener to listen for changes in the "calls" node
         childEventListener = new ChildEventListener() {
             @Override
@@ -132,15 +133,53 @@ public class MyFirebaseService extends Service {
         };
 
         // Attach the ChildEventListener to the "calls" node
-        callsRef.addChildEventListener(childEventListener);
+        receivedRef.addChildEventListener(childEventListener);
+    }
+
+    private void startListeningForAnswers() {
+        // Create a ChildEventListener to listen for changes in the "calls" node
+        childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (c.ACCEPTED_REQUEST == snapshot.child("status").getValue(Long.class)) {
+                    Intent intent = new Intent(MyFirebaseService.this, MyTicket.class);
+                    startActivity(intent);
+                    Toast.makeText(MyFirebaseService.this, "Request Accepted!", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+
+            // Implement other ChildEventListener methods as needed
+        };
+
+        // Attach the ChildEventListener to the "calls" node
+        receivedRef.addChildEventListener(childEventListener);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         // Detach the ChildEventListener when the service is destroyed
-        if (callsRef != null && childEventListener != null) {
-            callsRef.removeEventListener(childEventListener);
+        if (receivedRef != null && childEventListener != null) {
+            receivedRef.removeEventListener(childEventListener);
         }
     }
 
