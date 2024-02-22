@@ -78,22 +78,8 @@ public class MapActivity extends AppCompatActivity {
     private void signOut() {
         // Sign out of Firebase
         auth.signOut();
-
-//         Sign out of Google (optional)
-        // Թքած կպցրած !!!
-        try {
-            GoogleSignIn.getClient(getApplicationContext(), GoogleSignInOptions.DEFAULT_SIGN_IN).signOut()
-                    .addOnCompleteListener((Executor) this, task -> {
-                        // Update UI or start login activity
-                        Toast.makeText(this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(MapActivity.this, SignInActivity.class));
-                        finish();
-                    });
-        } catch (ClassCastException e) {
-            Toast.makeText(this, "Failed to sign out from google", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(MapActivity.this, SignInActivity.class));
-            finish();
-        }
+        startActivity(new Intent(MapActivity.this, SignInActivity.class));
+        finish();
     }
 
     private void startQRCodeScanner() {

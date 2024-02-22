@@ -107,10 +107,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
                 String id = snapshot.getKey();
                 for (Marker marker : markerList) {
-                    Log.d("AAAAAA", "onChildRemoved: " + marker.getTag());
-                    Log.d("AAAAAA", "onChildRemoved: " + id);
                     if (Objects.equals(marker.getTag(), id)) {
-                        Log.d("AAAAAA", "onChildRemoved: aaaaaaaaaaaaaa");
                         marker.remove();
                         markerList.remove(marker);
                         break;

@@ -3,6 +3,7 @@ package com.example.transformingparking;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,12 +14,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class VerifyCodeActivity extends AppCompatActivity {
@@ -28,7 +35,9 @@ public class VerifyCodeActivity extends AppCompatActivity {
     private TextView err_message;
 
     private String mVerificationId;
+    private String fullName;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +51,7 @@ public class VerifyCodeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         mVerificationId = getIntent().getStringExtra("verificationId");
+        fullName = getIntent().getStringExtra("fullName");
 
         verifyCodeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +79,18 @@ public class VerifyCodeActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             // Sign in success
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            assert user != null;
+
+                            DocumentReference docRef = db.collection("users").document(user.getUid());
+
+                            Map<String, Object> currentUser = new HashMap<>();
+                            currentUser.put("phone", user.getPhoneNumber());
+                            currentUser.put("name", fullName);
+
+                            docRef.set(currentUser);
+
                             Intent intent = new Intent(VerifyCodeActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();

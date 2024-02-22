@@ -12,21 +12,31 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class SignInActivity extends AppCompatActivity {
 
     private EditText phoneNumberEditText;
+    private EditText fullNameEditText;
     private Button signInButton;
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String mVerificationId;
 
     @Override
@@ -34,6 +44,7 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
+        fullNameEditText = findViewById(R.id.editTextTextName);
         phoneNumberEditText = findViewById(R.id.editTextPhone);
         signInButton = findViewById(R.id.button);
 
@@ -76,6 +87,7 @@ public class SignInActivity extends AppCompatActivity {
                         // Move to the next activity to enter the verification code
                         Intent intent = new Intent(SignInActivity.this, VerifyCodeActivity.class);
                         intent.putExtra("verificationId", mVerificationId);
+                        intent.putExtra("fullName", fullNameEditText.getText().toString());
                         startActivity(intent);
                     }
                 });
@@ -88,16 +100,17 @@ public class SignInActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             // Sign in success
-                            Intent intent = new Intent(SignInActivity.this, MapActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            // Sign in failed
-                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                Toast.makeText(SignInActivity.this, "Invalid Verification Code", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(SignInActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            }
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            assert user != null;
+
+                            DocumentReference docRef = db.collection("users").document(user.getUid());
+
+                            Map<String, Object> currentUser = new HashMap<>();
+                            currentUser.put("phone", user.getPhoneNumber());
+                            currentUser.put("name", user.getDisplayName());
+
+                            docRef.set(currentUser);
                         }
                     }
                 });
