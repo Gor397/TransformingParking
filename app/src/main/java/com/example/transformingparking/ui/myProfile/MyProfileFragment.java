@@ -1,4 +1,4 @@
-package com.example.transformingparking.ui.dashboard;
+package com.example.transformingparking.ui.myProfile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.transformingparking.AddParkingActivity;
 import com.example.transformingparking.R;
-import com.example.transformingparking.databinding.FragmentDashboardBinding;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.transformingparking.SettingsActivity;;
+import com.example.transformingparking.databinding.FragmentMyProfileBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,33 +29,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DashboardFragment extends Fragment {
+public class MyProfileFragment extends Fragment {
 
-    private FragmentDashboardBinding binding;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseUser user = auth.getCurrentUser();
-    RecyclerView recyclerView;
-    FloatingActionButton addParkingBtn;
+    private @NonNull FragmentMyProfileBinding binding;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private FirebaseUser user = auth.getCurrentUser();
+    private RecyclerView recyclerView;
+    private Button addParkingBtn;
+    private Button settingsBtn;
+    private TextView name;
+    private TextView phone;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        MyProfileViewModel myProfileViewModel = new ViewModelProvider(this).get(MyProfileViewModel.class);
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentMyProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         addParkingBtn = root.findViewById(R.id.add_parking_btn);
         recyclerView = root.findViewById(R.id.recyclerView);
+        settingsBtn = root.findViewById(R.id.settings_btn);
+        name = root.findViewById(R.id.name);
+        phone = root.findViewById(R.id.phone);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        addParkingBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent addParkingIntent = new Intent(getActivity(), AddParkingActivity.class);
-                startActivity(addParkingIntent);
-            }
+        settingsBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(intent);
         });
+
+        addParkingBtn.setOnClickListener(v -> {
+            Intent addParkingIntent = new Intent(getActivity(), AddParkingActivity.class);
+            startActivity(addParkingIntent);
+        });
+
+        db.collection("users").document(user.getUid()).get()
+                .addOnSuccessListener(queryDocumentSnapshot -> {
+                    name.setText(queryDocumentSnapshot.get("name", String.class));
+                    phone.setText(queryDocumentSnapshot.get("phone", String.class));
+                });
 
         db.collection("parking_spaces").whereEqualTo("user_id", user.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
             List<Map<String, Object>> posts = new ArrayList<>();

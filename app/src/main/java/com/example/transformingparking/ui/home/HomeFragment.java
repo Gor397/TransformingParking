@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,7 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.transformingparking.BookingActivity;
+import com.example.transformingparking.MapActivity;
 import com.example.transformingparking.R;
+import com.example.transformingparking.SignInActivity;
 import com.example.transformingparking.databinding.FragmentHomeBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,6 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,17 +50,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private FragmentHomeBinding binding;
 
     private GoogleMap mMap;
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseDatabase realtimeDB = FirebaseDatabase.getInstance();
-    DatabaseReference availableParkingSpotsRef = realtimeDB.getReference("available_parking_spots");
-    FirebaseUser user;
-    List<Marker> markerList = new ArrayList<>();
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseDatabase realtimeDB = FirebaseDatabase.getInstance();
+    private DatabaseReference availableParkingSpotsRef = realtimeDB.getReference("available_parking_spots");
+    private FirebaseUser user;
+    private List<Marker> markerList = new ArrayList<>();
+    private Button scanQrBtn;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -67,7 +70,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
+        scanQrBtn = root.findViewById(R.id.scan_qr_btn);
+        scanQrBtn.setOnClickListener(v -> {
+            startQRCodeScanner();
+        });
+
         return root;
+    }
+
+    private void startQRCodeScanner() {
+        IntentIntegrator integrator = new IntentIntegrator(getActivity());
+        integrator.setOrientationLocked(false);
+        integrator.initiateScan();
     }
 
     @Override
@@ -89,9 +103,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 Double longitude = snapshot.child("longitude").getValue(Double.class);
 
                 LatLng location = new LatLng(latitude, longitude);
-                MarkerOptions markerOptions = new MarkerOptions()
-                        .position(location)
-                        .title("Marker " + id);
+                MarkerOptions markerOptions = new MarkerOptions().position(location).title("Marker " + id);
 
                 Marker marker = googleMap.addMarker(markerOptions);
                 Objects.requireNonNull(marker).setTag(id);
@@ -126,32 +138,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 Log.w("HOME_FRAGMENT", "Failed to read value.", error.toException());
             }
         });
-
-//        db.collection("parking_spaces")
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                if (Boolean.FALSE.equals(document.get("status", Boolean.class))) {
-//                                    continue;
-//                                }
-//                                Map latlng = (Map) document.getData().get("latlng");
-//                                String id = document.getId();
-//
-//                                LatLng location = new LatLng((Double) latlng.get("latitude"), (Double) latlng.get("longitude"));
-//                                MarkerOptions markerOptions = new MarkerOptions()
-//                                        .position(location)
-//                                        .title("Marker " + id);
-//
-//                                googleMap.addMarker(markerOptions).setTag(id);
-//                            }
-//                        } else {
-//                            Log.d("GettingParkingSpaces", "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
 
         mMap.setOnMarkerClickListener(this);
     }

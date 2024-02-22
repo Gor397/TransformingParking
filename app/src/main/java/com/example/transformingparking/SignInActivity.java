@@ -99,7 +99,6 @@ public class SignInActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
-                            // Sign in success
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             assert user != null;
@@ -108,9 +107,13 @@ public class SignInActivity extends AppCompatActivity {
 
                             Map<String, Object> currentUser = new HashMap<>();
                             currentUser.put("phone", user.getPhoneNumber());
-                            currentUser.put("name", user.getDisplayName());
+                            currentUser.put("name", fullNameEditText.getText().toString());
 
                             docRef.set(currentUser);
+
+                            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
                         }
                     }
                 });
