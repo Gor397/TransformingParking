@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -47,7 +48,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -61,7 +61,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private FirebaseUser user;
     private List<Marker> markerList = new ArrayList<>();
     private Button scanQrBtn;
+    private FloatingActionButton getMyLocationBtn;
     private Marker current_location_marker;
+    private FusedLocationProviderClient mFusedLocationClient;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -80,6 +82,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             startQRCodeScanner();
         });
 
+        getMyLocationBtn = root.findViewById(R.id.get_my_location_btn);
+        getMyLocationBtn.setOnClickListener(v ->{
+            getMyLocation();
+        });
+
         return root;
     }
 
@@ -94,7 +101,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         mMap = googleMap;
 
         // Initialize FusedLocationProviderClient
-        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
         // Create a new LocationRequest object
         LocationRequest locationRequest = new LocationRequest();
@@ -103,43 +110,32 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         locationRequest.setInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+        // Get the last known location and update the map
+        getMyLocation();
+
         // Check if the location permission is granted
         if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Request location permission if it is not granted
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
-        // Get the last known location and update the map
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(requireActivity(), location -> {
-                    if (location != null) {
-                        // Create a new marker at the current location
-                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                        MarkerOptions markerOptions = new MarkerOptions().position(currentLocation);
-                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_sign));
-                        current_location_marker = mMap.addMarker(markerOptions);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16));
-                    }
-                });
-
         // Request location updates
         mFusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Location location = locationResult.getLastLocation();
-                // Update the marker on the map
-                assert location != null;
-                LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions().position(currentLocation);
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_sign));
-                current_location_marker.remove();
-                current_location_marker = mMap.addMarker(markerOptions);
+                if (location != null) {
+                    LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                    MarkerOptions markerOptions = new MarkerOptions().position(currentLocation);
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_sign));
+                    markerOptions.anchor(0.5f, 0.5f);
+                    if (current_location_marker != null) {
+                        current_location_marker.remove();
+                    }
+                    current_location_marker = mMap.addMarker(markerOptions);
+                }
             }
         }, Looper.getMainLooper());
-
-        LatLng dilijan = new LatLng(40.7406, 44.8626);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dilijan, 17));
-        mMap.addMarker(new MarkerOptions().position(dilijan));
 
         availableParkingSpotsRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -190,14 +186,34 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         mMap.setOnMarkerClickListener(this);
     }
 
+    private void getMyLocation() {
+        // Check if the location permission is granted
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request location permission if it is not granted
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(requireActivity(), location -> {
+                    if (location != null) {
+                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        MarkerOptions markerOptions = new MarkerOptions().position(currentLocation);
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_sign));
+                        markerOptions.anchor(0.5f, 0.5f);
+                        if (current_location_marker != null) {
+                            current_location_marker.remove();
+                        }
+                        current_location_marker = mMap.addMarker(markerOptions);
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16));
+                    }
+                });
+    }
+
     @Override
     public boolean onMarkerClick(Marker marker) {
         Intent bookingViewIntent = new Intent(getActivity(), BookingActivity.class);
         bookingViewIntent.putExtra("markerId", (String) marker.getTag());
-
-//        bookingViewIntent.putExtra("Owner_name", "Vartishax");
         startActivity(bookingViewIntent);
-//        finish();
 
         return false;
     }

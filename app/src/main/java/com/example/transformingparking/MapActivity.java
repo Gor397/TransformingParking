@@ -24,7 +24,6 @@ import com.google.zxing.integration.android.IntentResult;
 public class MapActivity extends AppCompatActivity {
 
     private ActivityMapBinding binding;
-    private Button signOutBtn;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
@@ -66,7 +65,6 @@ public class MapActivity extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
         // Handle configuration changes here
     }
-
 
     @Override
     protected void onResume() {
