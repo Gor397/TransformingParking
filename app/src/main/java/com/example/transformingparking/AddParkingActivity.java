@@ -101,9 +101,9 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                     assert addressList != null;
                     Address address = addressList.get(0);
                     LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                    map.addMarker(new MarkerOptions().position(latLng).title(location));
+                    marker = map.addMarker(new MarkerOptions().position(latLng).title(location));
 
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
                 } catch (IndexOutOfBoundsException | AssertionError e) {
                     Toast.makeText(AddParkingActivity.this, "Not Found", Toast.LENGTH_SHORT).show();
                 }
