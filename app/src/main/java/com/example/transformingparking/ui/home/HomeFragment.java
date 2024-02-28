@@ -6,9 +6,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,13 +15,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.transformingparking.BookingActivity;
 import com.example.transformingparking.Constants;
-import com.example.transformingparking.HttpsRequest;
 import com.example.transformingparking.R;
 import com.example.transformingparking.ScanQRActivity;
 import com.example.transformingparking.databinding.FragmentHomeBinding;
@@ -45,21 +43,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -78,6 +73,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private FusedLocationProviderClient mFusedLocationClient;
     private Constants constants = new Constants();
     private Map<String, double[]> markersJSON = new HashMap<>();
+
+    public void addToMarkerList(Marker marker) {
+        this.markerList.add(marker);
+    }
+
+    public void removeFromMarkerList(Marker marker) {
+        this.markerList.remove(marker);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -150,73 +153,60 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             }
         }, Looper.getMainLooper());
 
-        // Get markers from server
-        new HttpRequestTask().execute(
-                constants.SERVER_URL +
-                        "?secret=" + constants.SERVER_SECRET +
-                        "&filter_status=" + constants.FREE);
-
-        // Check for updates on server every 5 seconds
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                requireActivity().runOnUiThread(new Runnable() {
+        db.collection("parking_spaces")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void run() {
-                        new HttpRequestTask().execute(
-                                constants.SERVER_URL +
-                                        "?secret=" + constants.SERVER_SECRET +
-                                        "&filter_status=" + constants.FREE);
+                    public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "listen:error", e);
+                            return;
+                        }
+
+                        for (DocumentChange snapshot : snapshots.getDocumentChanges()) {
+                            switch (snapshot.getType()) {
+                                case ADDED:
+                                case MODIFIED:
+                                    DocumentSnapshot addedDoc = snapshot.getDocument();
+                                    String id = addedDoc.getId();
+                                    String status = addedDoc.get("status").toString();
+                                    Log.d(TAG, "onEvent: " + status);
+
+                                    if (status.equals(Integer.toString(constants.FREE))) {
+                                        Map<String, Double> latlng = (Map<String, Double>) addedDoc.get("latlng");
+                                        assert latlng != null;
+                                        Double latitude = latlng.get("latitude");
+                                        Double longitude = latlng.get("longitude");
+
+                                        LatLng location = new LatLng(latitude, longitude);
+                                        MarkerOptions markerOptions = new MarkerOptions().position(location).title("Marker " + id);
+
+                                        Marker marker = mMap.addMarker(markerOptions);
+                                        Objects.requireNonNull(marker).setTag(id);
+                                        addToMarkerList(marker);
+                                    } else {
+                                        for (Marker marker : markerList) {
+                                            if (marker.getTag().equals(id)) {
+                                                marker.remove();
+                                                removeFromMarkerList(marker);
+                                            }
+                                        }
+                                    }
+                                    break;
+
+                                case REMOVED:
+                                    DocumentSnapshot removedDoc = snapshot.getDocument();
+                                    String removed_id = removedDoc.getId();
+
+                                    for (Marker marker : markerList) {
+                                        if (marker.getTag() == removed_id) {
+                                            marker.remove();
+                                            markerList.remove(marker);
+                                        }
+                                    }
+                            }
+                        }
                     }
                 });
-            }
-        }, 0, 10 * 1000);
-
-//        availableParkingSpotsRef.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                String id = snapshot.getKey();
-//                Double latitude = snapshot.child("latitude").getValue(Double.class);
-//                Double longitude = snapshot.child("longitude").getValue(Double.class);
-//
-//                LatLng location = new LatLng(latitude, longitude);
-//                MarkerOptions markerOptions = new MarkerOptions().position(location).title("Marker " + id);
-//
-//                Marker marker = googleMap.addMarker(markerOptions);
-//                Objects.requireNonNull(marker).setTag(id);
-//                markerList.add(marker);
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-//                String id = snapshot.getKey();
-//                for (Marker marker : markerList) {
-//                    if (Objects.equals(marker.getTag(), id)) {
-//                        marker.remove();
-//                        markerList.remove(marker);
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                // Failed to read value
-//                Log.w("HOME_FRAGMENT", "Failed to read value.", error.toException());
-//            }
-//        });
 
         mMap.setOnMarkerClickListener(this);
     }
@@ -257,95 +247,5 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-    }
-
-    private class HttpRequestTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                // Send GET request
-                return HttpsRequest.sendGetRequest(params[0]);
-            } catch (IOException e) {
-                Log.e(TAG, "Error sending GET request: " + e.getMessage());
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            // Handle the result here
-            if (result != null) {
-                Log.d(TAG, "Response: " + result);
-                Gson gson = new Gson();
-                Map<String, ArrayList<Double>> originalMap = gson.fromJson(result, Map.class);
-                Map<String, double[]> map = new HashMap<>();
-                for (Map.Entry<String, ArrayList<Double>> entry : originalMap.entrySet()) {
-                    String key = entry.getKey();
-                    ArrayList<Double> arrayList = entry.getValue();
-                    double[] doubleArray = arrayList.stream().mapToDouble(Double::doubleValue).toArray();
-                    map.put(key, doubleArray);
-                }
-
-                Map<String, double[]> addedMarkers = getAddedMarkers(markersJSON, map);
-                List<String> removedMarkers = getRemovedMarkers(markersJSON, map);
-                for (Map.Entry<String, double[]> entry : addedMarkers.entrySet()) {
-                    String id = entry.getKey();
-                    double latitude = entry.getValue()[0];
-                    double longitude = entry.getValue()[1];
-                    LatLng location = new LatLng(latitude, longitude);
-                    MarkerOptions markerOptions = new MarkerOptions().position(location).title("Marker " + id);
-
-                    Marker marker = mMap.addMarker(markerOptions);
-                    Objects.requireNonNull(marker).setTag(id);
-                    markerList.add(marker);
-                }
-
-                for (String id : removedMarkers) {
-                    for (Marker marker : markerList) {
-                        if (marker.getTag() == id) {
-                            marker.remove();
-                            markerList.remove(marker);
-                        }
-                    }
-                }
-
-                markersJSON = map;
-                Log.d(TAG, "onPostExecute: " + map.toString());
-            } else {
-                Log.e(TAG, "Failed to get response");
-            }
-        }
-    }
-
-    private Map<String, double[]> getAddedMarkers(Map<String, double[]> oldJSON, Map<String, double[]> newJSON) {
-        Map<String, double[]> addedEntries = new HashMap<>();
-
-        for (Map.Entry<String, double[]> entry : newJSON.entrySet()) {
-            String key = entry.getKey();
-            double[] value1 = entry.getValue();
-            double[] value2 = oldJSON.get(key);
-
-            if (value2 == null) {
-                addedEntries.put(key, value1);
-            }
-        }
-
-        return addedEntries;
-    }
-
-    private List<String> getRemovedMarkers(Map<String, double[]> oldJSON, Map<String, double[]> newJSON) {
-        List<String> removedEntries = new ArrayList<>();
-
-        for (Map.Entry<String, double[]> entry : oldJSON.entrySet()) {
-            String key = entry.getKey();
-            double[] value2 = newJSON.get(key);
-
-            if (value2 == null) {
-                removedEntries.add(key);
-            }
-        }
-
-        return removedEntries;
     }
 }
