@@ -116,6 +116,7 @@ public class ScanQRActivity extends AppCompatActivity {
                     if (httpCode == 200 && responseData.equals("Data saved successfully")) {
                         Intent paymentIntent = new Intent(ScanQRActivity.this, CheckoutActivity.class);
                         startActivity(paymentIntent);
+                        finish();
                     } else if (httpCode == 404 && responseData.equals("Parking id not found")) {
                         Toast.makeText(ScanQRActivity.this, "Invalid QR code", Toast.LENGTH_LONG).show();
                         startScanning();

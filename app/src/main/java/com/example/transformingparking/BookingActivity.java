@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +26,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.DecimalFormat;
+import java.util.Map;
+import java.util.Objects;
 
 public class BookingActivity extends AppCompatActivity {
     private static final int MIN_RENTING_MINUTES = 20;
@@ -36,7 +39,6 @@ public class BookingActivity extends AppCompatActivity {
     TextView descriptionView;
     Button ownerAccBtn;
     Button directionsBtn;
-    TextView costView;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -68,9 +70,13 @@ public class BookingActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        long price = (long) document.get("price");
+                        int price = Integer.parseInt(Objects.requireNonNull(document.get("price")).toString());
                         String description = (String) document.get("additional_info");
                         StorageReference imageRef = storage.getReference().child("parking_pics").child(markerId);
+                        Map<String, Double> latlng = (Map<String, Double>) document.get("latlng");
+                        assert latlng != null;
+                        Double latitude = latlng.get("latitude");
+                        Double longitude = latlng.get("longitude");
 
                         ownerId = (String) document.get("user_id");
                         setOwner();
@@ -91,10 +97,9 @@ public class BookingActivity extends AppCompatActivity {
                             }
                         });
 
-                        DecimalFormat df = new DecimalFormat("#");
-                        int cost = (int) (Double.parseDouble(df.format((double) price / 60 * MIN_RENTING_MINUTES)));
-                        costView.setText("Total cost: " + cost + " dram");
-
+                        directionsBtn.setOnClickListener(v -> {
+                            openDirections(latitude, longitude);
+                        });
                     } else {
                         // Document does not exist
                         // TODO Handle the case here
@@ -124,7 +129,7 @@ public class BookingActivity extends AppCompatActivity {
         });
     }
 
-    void setOwner() {
+    private void setOwner() {
         db.collection("users").document(ownerId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -141,5 +146,25 @@ public class BookingActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void openDirections(double lat, double lng) {
+        // Create a Uri from destination location coordinates
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + lat + "," + lng);
+
+        // Create an Intent with the action view and set the data
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+
+        // Set the package to Google Maps
+        mapIntent.setPackage("com.google.android.apps.maps");
+
+        // Check if there's any activity to handle the intent
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+            // Start Google Maps with directions
+            startActivity(mapIntent);
+        } else {
+            // Google Maps app is not installed, display a toast or alternative action
+            Toast.makeText(this, "Google Maps app is not installed", Toast.LENGTH_SHORT).show();
+        }
     }
 }
