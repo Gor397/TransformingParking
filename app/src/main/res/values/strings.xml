@@ -52,4 +52,10 @@
     <string name="payments_show_name" translatable="false">Successfully received payment data for
         %s!
     </string>
+    <string name="price_with2points">"Price: "</string>
+    <string name="dram_per_hour">" dram per hour"</string>
+    <string name="google_maps_app_is_not_installed">Google Maps app is not installed</string>
+    <string name="invalid_verification_code">Invalid Verification Code</string>
+    <string name="authentication_failed">"Authentication failed: "</string>
+    <string name="this_field_should_contain_only_letters">This field should contain only letters</string>
 </resources>

@@ -26,6 +26,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Objects;
 
@@ -45,7 +46,6 @@ public class BookingActivity extends AppCompatActivity {
     FirebaseDatabase realtimeDb = FirebaseDatabase.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
-    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +64,6 @@ public class BookingActivity extends AppCompatActivity {
         }
 
         db.collection("parking_spaces").document(markerId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @SuppressLint("SetTextI18n")
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -81,7 +80,7 @@ public class BookingActivity extends AppCompatActivity {
                         ownerId = (String) document.get("user_id");
                         setOwner();
 
-                        priceView.setText("Price: " + price + " dram per hour");
+                        priceView.setText(MessageFormat.format("{0}{1}{2}", getString(R.string.price_with2points), price, getString(R.string.dram_per_hour)));
                         descriptionView.setText(description);
 
                         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -131,7 +130,6 @@ public class BookingActivity extends AppCompatActivity {
 
     private void setOwner() {
         db.collection("users").document(ownerId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @SuppressLint("SetTextI18n")
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -164,7 +162,7 @@ public class BookingActivity extends AppCompatActivity {
             startActivity(mapIntent);
         } else {
             // Google Maps app is not installed, display a toast or alternative action
-            Toast.makeText(this, "Google Maps app is not installed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.google_maps_app_is_not_installed), Toast.LENGTH_SHORT).show();
         }
     }
 }

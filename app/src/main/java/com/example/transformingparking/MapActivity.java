@@ -1,8 +1,10 @@
 package com.example.transformingparking;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -25,6 +27,7 @@ public class MapActivity extends AppCompatActivity {
 
     private ActivityMapBinding binding;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private Button testBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,8 @@ public class MapActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_map);
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        testBtn = findViewById(R.id.test_pay_btn);
     }
 
     @Override

@@ -1,12 +1,14 @@
 package com.example.transformingparking;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -33,6 +36,7 @@ public class VerifyCodeActivity extends AppCompatActivity {
     private EditText verificationCodeEditText;
     private Button verifyCodeButton;
     private TextView err_message;
+    private ProgressDialog progressDialog;
 
     private String mVerificationId;
     private String fullName;
@@ -47,6 +51,7 @@ public class VerifyCodeActivity extends AppCompatActivity {
         verificationCodeEditText = findViewById(R.id.editTextVerificationCode);
         verifyCodeButton = findViewById(R.id.buttonVerifyCode);
         err_message = findViewById(R.id.err_message);
+        progressDialog = new ProgressDialog(VerifyCodeActivity.this);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -58,6 +63,10 @@ public class VerifyCodeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String verificationCode = verificationCodeEditText.getText().toString().trim();
                 if (!verificationCode.isEmpty()) {
+//                    progressBar.setVisibility(View.VISIBLE);
+                    progressDialog.setMessage("Loading...");
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
                     verifyPhoneNumberWithCode(mVerificationId, verificationCode);
                 } else {
                     Toast.makeText(VerifyCodeActivity.this, "Please enter the verification code", Toast.LENGTH_SHORT).show();
@@ -74,7 +83,6 @@ public class VerifyCodeActivity extends AppCompatActivity {
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener() {
-                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
@@ -97,10 +105,12 @@ public class VerifyCodeActivity extends AppCompatActivity {
                         } else {
                             // Sign in failed
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                err_message.setText("Invalid Verification Code");
+                                progressDialog.cancel();
+                                err_message.setText(R.string.invalid_verification_code);
                                 Toast.makeText(VerifyCodeActivity.this, "Invalid Verification Code", Toast.LENGTH_SHORT).show();
                             } else {
-                                err_message.setText("Authentication failed: " + Objects.requireNonNull(task.getException()).getMessage());
+                                progressDialog.cancel();
+                                err_message.setText(MessageFormat.format("{0}{1}", getString(R.string.authentication_failed), Objects.requireNonNull(task.getException()).getMessage()));
                                 Toast.makeText(VerifyCodeActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }

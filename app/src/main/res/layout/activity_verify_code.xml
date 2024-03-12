@@ -1,37 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#121212"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="center">
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/labelVerificationCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Enter Your 6 Digit Code"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:layout_marginTop="40dp"/>
+
 
     <EditText
         android:id="@+id/editTextVerificationCode"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Verification Code"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#FFFFFF"
+        android:gravity="center"
+        android:hint="-  -  -  -  -  -"
+        android:textColorHint="#B0BEC5"
         android:inputType="number"
         android:maxLength="6"
-        android:layout_marginBottom="16dp"/>
+        android:textColor="#FFFFFF"
+        android:textSize="45sp" />
 
     <Button
         android:id="@+id/buttonVerifyCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="#3700B3"
         android:text="Verify Code"
-        android:layout_gravity="center"/>
+        android:textColor="#FFFFFF" />
 
     <TextView
         android:id="@+id/err_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text=""
-        android:layout_gravity="center"
         android:textAlignment="center"
-        android:textColor="@color/quantum_googred"
-        android:layout_marginTop="10dp"/>
+        android:textColor="#CF6679" />
 
 </LinearLayout>

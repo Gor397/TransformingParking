@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -76,11 +77,10 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
     }
 
     // Replace the contents of a view (invoked by the layout manager)
-    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getTextView()
-                .setText(Objects.requireNonNull(localDataSet.get(position).get("price")).toString() + " dram per hour");
+                .setText(MessageFormat.format("{0}{1}", Objects.requireNonNull(localDataSet.get(position).get("price")).toString(), R.string.dram_per_hour));
         viewHolder.getDescriptionTextView().setText(Objects.requireNonNull(localDataSet.get(position).get("additional_info")).toString());
         StorageReference imageRef = storageReference.child("parking_pics").child((String) Objects.requireNonNull(localDataSet.get(position).get("id")));
 

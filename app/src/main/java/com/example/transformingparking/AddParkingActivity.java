@@ -62,12 +62,13 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
     ImageView parkingPic;
     Button back_btn2;
     SupportMapFragment mapFragment;
-    AutocompleteSupportFragment autocompleteFragment;
+//    AutocompleteSupportFragment autocompleteFragment;
     NumberPicker priceField;
     LatLng parkingCoordinates;
     Uri selectedImageUri;
     String additionalInfo;
     SearchView searchView;
+    Button nextBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +83,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
         mapFragment.getMapAsync((OnMapReadyCallback) this);
 
         searchView = findViewById(R.id.search_view);
+        nextBtn = findViewById(R.id.next_btn);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -101,6 +103,11 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                     assert addressList != null;
                     Address address = addressList.get(0);
                     LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    if (marker != null) {
+                        marker.remove();
+                    } else {
+                        nextBtn.setEnabled(true);
+                    }
                     marker = map.addMarker(new MarkerOptions().position(latLng).title(location));
 
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
@@ -144,7 +151,6 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
 //                                                                    }
 //                                                                });
 
-        Button nextBtn = findViewById(R.id.next_btn);
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -252,6 +258,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
             public void onMapClick(@NonNull LatLng latLng) {
                 // Add a marker at the clicked location
                 if (marker == null) {
+                    nextBtn.setEnabled(true);
                     marker = map.addMarker(markerOptions.position(latLng));
                 } else {
                     marker.setPosition(latLng);

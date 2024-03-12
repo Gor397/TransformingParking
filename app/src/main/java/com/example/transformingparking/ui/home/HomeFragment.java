@@ -168,10 +168,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                 case MODIFIED:
                                     DocumentSnapshot addedDoc = snapshot.getDocument();
                                     String id = addedDoc.getId();
-                                    String status = addedDoc.get("status").toString();
+                                    int status = Integer.parseInt(String.valueOf(addedDoc.get("status")));
                                     Log.d(TAG, "onEvent: " + status);
 
-                                    if (status.equals(Integer.toString(constants.FREE))) {
+                                    if (status == constants.FREE) {
                                         Map<String, Double> latlng = (Map<String, Double>) addedDoc.get("latlng");
                                         assert latlng != null;
                                         Double latitude = latlng.get("latitude");
