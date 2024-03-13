@@ -31,12 +31,13 @@
         android:theme="@style/Theme.TransformingParking"
         tools:targetApi="31">
         <activity
+            android:name=".signIn.WriteNameActivty"
+            android:exported="false" />
+        <activity
             android:name=".CheckoutActivity"
             android:exported="false"
             android:label="@string/title_activity_checkout"
-            android:theme="@style/Theme.TransformingParking" />
-
-        <!-- This element is required to enable Google Pay in your app. -->
+            android:theme="@style/Theme.TransformingParking" /> <!-- This element is required to enable Google Pay in your app. -->
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
@@ -52,7 +53,7 @@
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".VerifyCodeActivity"
+            android:name=".signIn.VerifyCodeActivity"
             android:exported="false" />
         <activity
             android:name=".AddParkingActivity"
@@ -62,7 +63,7 @@
             android:exported="false"
             android:label="@string/title_activity_map" />
         <activity
-            android:name=".SignInActivity"
+            android:name=".signIn.SignInActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileActivity"

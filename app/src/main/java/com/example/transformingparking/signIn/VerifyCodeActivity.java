@@ -1,6 +1,7 @@
-package com.example.transformingparking;
+package com.example.transformingparking.signIn;
 
-import android.annotation.SuppressLint;
+import static android.content.ContentValues.TAG;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,15 +9,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.transformingparking.MainActivity;
+import com.example.transformingparking.R;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -24,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.MessageFormat;
@@ -39,7 +41,6 @@ public class VerifyCodeActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private String mVerificationId;
-    private String fullName;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -56,14 +57,12 @@ public class VerifyCodeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         mVerificationId = getIntent().getStringExtra("verificationId");
-        fullName = getIntent().getStringExtra("fullName");
 
         verifyCodeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String verificationCode = verificationCodeEditText.getText().toString().trim();
                 if (!verificationCode.isEmpty()) {
-//                    progressBar.setVisibility(View.VISIBLE);
                     progressDialog.setMessage("Loading...");
                     progressDialog.setCancelable(false);
                     progressDialog.show();
@@ -92,16 +91,31 @@ public class VerifyCodeActivity extends AppCompatActivity {
                             assert user != null;
 
                             DocumentReference docRef = db.collection("users").document(user.getUid());
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists() && document.contains("name")) {
+                                            Intent intent = new Intent(VerifyCodeActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Map<String, Object> currentUser = new HashMap<>();
+                                            currentUser.put("phone", user.getPhoneNumber());
 
-                            Map<String, Object> currentUser = new HashMap<>();
-                            currentUser.put("phone", user.getPhoneNumber());
-                            currentUser.put("name", fullName);
+                                            docRef.set(currentUser);
 
-                            docRef.set(currentUser);
-
-                            Intent intent = new Intent(VerifyCodeActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                                            Intent intent = new Intent(VerifyCodeActivity.this, WriteNameActivty.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    } else {
+                                        // TODO handle the error
+                                        Log.d(TAG, "Failed to get document.", task.getException());
+                                    }
+                                }
+                            });
                         } else {
                             // Sign in failed
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
