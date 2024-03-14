@@ -68,10 +68,9 @@ public class ScanQRActivity extends AppCompatActivity {
                 // Handle barcode result
                 String parkingId = result.getText();
                 Log.d("QRCodeScanner", "QR Code text: " + parkingId);
-                Constants c = new Constants();
-                String serverURL = c.SERVER_URL;
-                int status = c.OPEN_COMMAND;
-                String secret = c.SERVER_SECRET;
+                String serverURL = Constants.SERVER_URL;
+                int status = Constants.OPEN_COMMAND;
+                String secret = Constants.SERVER_SECRET;
                 sendGetRequest(
                         serverURL +
                                 "?parking_id=" + parkingId +

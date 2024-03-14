@@ -1,5 +1,8 @@
 package com.example.transformingparking;
 
+import static com.example.transformingparking.Constants.CROP_IMAGE_REQUEST_CODE;
+import static com.example.transformingparking.Constants.PENDING;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -50,7 +53,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class AddParkingActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final int CROP_IMAGE_REQUEST_CODE = 1;
     private GoogleMap map;
     FirebaseFirestore database = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -80,7 +82,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map2);
         assert mapFragment != null;
-        mapFragment.getMapAsync((OnMapReadyCallback) this);
+        mapFragment.getMapAsync(this);
 
         searchView = findViewById(R.id.search_view);
         nextBtn = findViewById(R.id.next_btn);
@@ -193,7 +195,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                         parking_space.put("latlng", parkingCoordinates);
                         parking_space.put("additional_info", additionalInfo);
                         parking_space.put("price", prices[priceField.getValue()]);
-                        parking_space.put("status", new Constants().PENDING);
+                        parking_space.put("status", PENDING);
                         parking_space.put("user_id", user.getUid());
 
                         database.collection("parking_spaces")
@@ -203,8 +205,6 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                                     Log.d("Adding Parking Space", "Parking added with ID: " + documentReference.getId());
                                 });
 
-                        Intent intent = new Intent(AddParkingActivity.this, MapActivity.class);
-                        startActivity(intent);
                         finish();
                     }
                 });
@@ -240,6 +240,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                 cropImageOptions.fixAspectRatio = true;
                 cropImageOptions.aspectRatioX = 4;
                 cropImageOptions.aspectRatioY = 3;
+                cropImageOptions.cropperLabelText = "Done";
                 cropImageOptions.autoZoomEnabled = false;
                 cropImageOptions.guidelines = CropImageView.Guidelines.ON;
                 CropImageContractOptions cropImageContractOptions = new CropImageContractOptions(data.getData(), cropImageOptions);

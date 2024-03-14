@@ -2,6 +2,8 @@ package com.example.transformingparking.ui.home;
 
 import static android.content.ContentValues.TAG;
 
+import static com.example.transformingparking.Constants.FREE;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -71,7 +73,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private FloatingActionButton getMyLocationBtn;
     private Marker current_location_marker;
     private FusedLocationProviderClient mFusedLocationClient;
-    private Constants constants = new Constants();
     private Map<String, double[]> markersJSON = new HashMap<>();
 
     public void addToMarkerList(Marker marker) {
@@ -171,7 +172,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                     int status = Integer.parseInt(String.valueOf(addedDoc.get("status")));
                                     Log.d(TAG, "onEvent: " + status);
 
-                                    if (status == constants.FREE) {
+                                    if (status == FREE) {
                                         Map<String, Double> latlng = (Map<String, Double>) addedDoc.get("latlng");
                                         assert latlng != null;
                                         Double latitude = latlng.get("latitude");

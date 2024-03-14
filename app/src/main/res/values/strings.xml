@@ -59,4 +59,11 @@
     <string name="authentication_failed">"Authentication failed: "</string>
     <string name="this_field_should_contain_only_letters">This field should contain only letters</string>
     <string name="invalid_phone_number">Invalid phone number.</string>
+    <string name="full_name">Full Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="save">Save</string>
+    <string name="this_field_can_t_be_empty">This field can\'t be empty</string>
+    <string name="change_phone_number">Change Phone Number</string>
+    <string name="invalid_code">Invalid Code</string>
+    <string name="this_number_is_already_used_in_another_account">This number is already used in another account</string>
 </resources>
