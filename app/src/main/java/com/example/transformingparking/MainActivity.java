@@ -51,13 +51,8 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         } else {
-                            Map<String, Object> currentUser = new HashMap<>();
-                            currentUser.put("phone", user.getPhoneNumber());
-
-                            docRef.set(currentUser);
-
-                            Intent intent = new Intent(MainActivity.this, WriteNameActivty.class);
-                            startActivity(intent);
+                            Intent signInIntent = new Intent(MainActivity.this, SignInActivity.class);
+                            startActivity(signInIntent);
                             finish();
                         }
                     } else {
