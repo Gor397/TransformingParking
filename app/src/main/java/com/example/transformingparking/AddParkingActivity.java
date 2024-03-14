@@ -194,7 +194,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                         Map<String, Object> parking_space = new HashMap<>();
                         parking_space.put("latlng", parkingCoordinates);
                         parking_space.put("additional_info", additionalInfo);
-                        parking_space.put("price", prices[priceField.getValue()]);
+                        parking_space.put("price", Integer.parseInt(prices[priceField.getValue()]));
                         parking_space.put("status", PENDING);
                         parking_space.put("user_id", user.getUid());
 

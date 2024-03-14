@@ -112,7 +112,6 @@ public class MyProfileFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         settingsBtn.setOnClickListener(v -> {
-            Log.d("AAAAAAAAAA", "onCreateView: AAAAAAAAA");
             Intent intent = new Intent(getActivity(), SettingsActivity.class);
             startActivity(intent);
         });

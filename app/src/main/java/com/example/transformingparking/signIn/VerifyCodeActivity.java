@@ -19,6 +19,7 @@ import com.example.transformingparking.MainActivity;
 import com.example.transformingparking.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -29,6 +30,9 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -43,8 +47,10 @@ public class VerifyCodeActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private String mVerificationId;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser user = mAuth.getCurrentUser();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +61,6 @@ public class VerifyCodeActivity extends AppCompatActivity {
         verifyCodeButton = findViewById(R.id.buttonVerifyCode);
         err_message = findViewById(R.id.err_message);
         progressDialog = new ProgressDialog(VerifyCodeActivity.this);
-
-        mAuth = FirebaseAuth.getInstance();
 
         mVerificationId = getIntent().getStringExtra("verificationId");
 
@@ -85,87 +89,159 @@ public class VerifyCodeActivity extends AppCompatActivity {
         if (getIntent().getBooleanExtra("updatePhoneNumber", false)) {
             FirebaseUser user = mAuth.getCurrentUser();
             assert user != null;
-            user.updatePhoneNumber(credential)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            progressDialog.cancel();
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "Phone number updated.");
+            user.updatePhoneNumber(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    progressDialog.cancel();
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Phone number updated.");
 
-                                DocumentReference docRef = db.collection("users").document(user.getUid());
-                                Map<String, Object> updates = new HashMap<>();
-                                updates.put("phone", user.getPhoneNumber());
+                        DocumentReference docRef = db.collection("users").document(user.getUid());
+                        Map<String, Object> updates = new HashMap<>();
+                        updates.put("phone", user.getPhoneNumber());
 
-                                docRef.update(updates);
+                        docRef.update(updates);
 
-                                finish();
-                            } else {
-                                Log.d(TAG, "Failed to update phone number.", task.getException());
-                                if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                    err_message.setText(getString(R.string.this_number_is_already_used_in_another_account));
-                                }
-                            }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                                err_message.setText(R.string.invalid_code);
-                            }
-                        }
-                    });
-            return;
-        }
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                if (task.isSuccessful()) {
-                    // Sign in success
-                    FirebaseUser user = mAuth.getCurrentUser();
-
-                    assert user != null;
-
-                    DocumentReference docRef = db.collection("users").document(user.getUid());
-                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                if (document.exists() && document.contains("name")) {
-                                    Intent intent = new Intent(VerifyCodeActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    Map<String, Object> currentUser = new HashMap<>();
-                                    currentUser.put("phone", user.getPhoneNumber());
-
-                                    docRef.set(currentUser);
-
-                                    Intent intent = new Intent(VerifyCodeActivity.this, WriteNameActivty.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            } else {
-                                // TODO handle the error
-                                Log.d(TAG, "Failed to get document.", task.getException());
-                            }
-                        }
-                    });
-                } else {
-                    // Sign in failed
-                    if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                        progressDialog.cancel();
-                        err_message.setText(R.string.invalid_verification_code);
-                        Toast.makeText(VerifyCodeActivity.this, "Invalid Verification Code", Toast.LENGTH_SHORT).show();
+                        finish();
                     } else {
-                        progressDialog.cancel();
-                        err_message.setText(MessageFormat.format("{0}{1}", getString(R.string.authentication_failed), Objects.requireNonNull(task.getException()).getMessage()));
-                        Toast.makeText(VerifyCodeActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "Failed to update phone number.", task.getException());
+                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                            err_message.setText(getString(R.string.this_number_is_already_used_in_another_account));
+                        }
                     }
                 }
-            }
-        });
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                        err_message.setText(R.string.invalid_code);
+                    }
+                }
+            });
+        } else if (getIntent().getBooleanExtra("deleteAccount", false)) {
+            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    db.collection("parking_spaces").whereEqualTo("user_id", user.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            StorageReference parkingPicRef = storageRef.child("parking_pics").child(document.getId());
+                            parkingPicRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "onSuccess: deleted parking picture");
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // TODO
+                                    Log.d(TAG, "onFailure: Failed to delete parking picture" + e.getMessage());
+                                }
+                            });
+
+                            document.getReference().delete();
+                        }
+                    });
+
+                    StorageReference profilePicRef = storageRef.child("profile_pics").child(user.getUid());
+                    profilePicRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "onSuccess: deleted profile picture");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // TODO
+                            Log.d(TAG, "onFailure: Failed to delete profile picture " + e.getMessage());
+                        }
+                    });
+
+                    db.collection("users").document(user.getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Log.d(TAG, "onComplete: Deleted user from Firestore Database");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // TODO
+                            Log.d(TAG, "onFailure: Failed to remove user from Firestore Database " + e.getMessage());
+                        }
+                    });
+
+                    user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "User account deleted.");
+                                Intent intent = new Intent(VerifyCodeActivity.this, MainActivity.class);
+                                startActivity(intent);
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "onFailure: Failed to delete FirebaseUser " + e.getMessage());
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // TODO
+                    Log.d(TAG, "onFailure: Failed to delete account" + e.getMessage());
+                }
+            });
+        } else {
+            mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if (task.isSuccessful()) {
+                        // Sign in success
+                        FirebaseUser user = mAuth.getCurrentUser();
+
+                        assert user != null;
+
+                        DocumentReference docRef = db.collection("users").document(user.getUid());
+                        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if (document.exists() && document.contains("name")) {
+                                        Intent intent = new Intent(VerifyCodeActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Map<String, Object> currentUser = new HashMap<>();
+                                        currentUser.put("phone", user.getPhoneNumber());
+
+                                        docRef.set(currentUser);
+
+                                        Intent intent = new Intent(VerifyCodeActivity.this, WriteNameActivty.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                } else {
+                                    // TODO handle the error
+                                    Log.d(TAG, "Failed to get document.", task.getException());
+                                }
+                            }
+                        });
+                    } else {
+                        // Sign in failed
+                        if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                            progressDialog.cancel();
+                            err_message.setText(R.string.invalid_verification_code);
+                            Toast.makeText(VerifyCodeActivity.this, "Invalid Verification Code", Toast.LENGTH_SHORT).show();
+                        } else {
+                            progressDialog.cancel();
+                            err_message.setText(MessageFormat.format("{0}{1}", getString(R.string.authentication_failed), Objects.requireNonNull(task.getException()).getMessage()));
+                            Toast.makeText(VerifyCodeActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
+        }
     }
 }

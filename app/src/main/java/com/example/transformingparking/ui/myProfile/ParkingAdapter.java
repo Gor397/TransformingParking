@@ -1,8 +1,11 @@
 package com.example.transformingparking.ui.myProfile;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +83,7 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getTextView()
-                .setText(MessageFormat.format("{0}{1}", Objects.requireNonNull(localDataSet.get(position).get("price")).toString(), R.string.dram_per_hour));
+                .setText(String.format("%s%s", localDataSet.get(position).get("price"), view.getContext().getString(R.string.dram_per_hour)));
         viewHolder.getDescriptionTextView().setText(Objects.requireNonNull(localDataSet.get(position).get("additional_info")).toString());
         StorageReference imageRef = storageReference.child("parking_pics").child((String) Objects.requireNonNull(localDataSet.get(position).get("id")));
 
