@@ -66,7 +66,7 @@ public class MyProfileFragment extends Fragment {
 
         addParkingBtn = binding.addParkingBtn;
         recyclerView = binding.recyclerView;
-        settingsBtn = binding.addParkingBtn;
+        settingsBtn = binding.settingsBtn;
         name = binding.name;
         phone = binding.phone;
         editBtn = binding.editBtn;
@@ -112,6 +112,7 @@ public class MyProfileFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         settingsBtn.setOnClickListener(v -> {
+            Log.d("AAAAAAAAAA", "onCreateView: AAAAAAAAA");
             Intent intent = new Intent(getActivity(), SettingsActivity.class);
             startActivity(intent);
         });
