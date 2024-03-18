@@ -123,6 +123,7 @@ public class BookingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent profileIntent = new Intent(BookingActivity.this, ProfileActivity.class);
+                profileIntent.putExtra("userId", ownerId);
                 startActivity(profileIntent);
             }
         });
