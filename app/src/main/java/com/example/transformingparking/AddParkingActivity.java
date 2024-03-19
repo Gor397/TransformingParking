@@ -71,6 +71,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
     String additionalInfo;
     SearchView searchView;
     Button nextBtn;
+    Button submitBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +111,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                     } else {
                         nextBtn.setEnabled(true);
                     }
-                    marker = map.addMarker(new MarkerOptions().position(latLng).title(location));
+                    marker = map.addMarker(new MarkerOptions().position(latLng));
 
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
                 } catch (IndexOutOfBoundsException | AssertionError e) {
@@ -178,7 +179,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                 priceField.setWrapSelectorWheel(false);
                 priceField.setDisplayedValues(prices);
 
-                Button submitBtn = findViewById(R.id.submit);
+                submitBtn = findViewById(R.id.submit);
                 submitBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -225,6 +226,9 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                     .override(screenWidth, Target.SIZE_ORIGINAL);
 
             Glide.with(this).load(cropped).apply(options).into(imageView);
+            submitBtn.setEnabled(true);
+        } else {
+            submitBtn.setEnabled(false);
         }
     });
 

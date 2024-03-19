@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,7 +70,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private DatabaseReference availableParkingSpotsRef = realtimeDB.getReference("available_parking_spots");
     private FirebaseUser user;
     private List<Marker> markerList = new ArrayList<>();
-    private Button scanQrBtn;
+    private ImageButton scanQrBtn;
     private FloatingActionButton getMyLocationBtn;
     private Marker current_location_marker;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -179,7 +180,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                         Double longitude = latlng.get("longitude");
 
                                         LatLng location = new LatLng(latitude, longitude);
-                                        MarkerOptions markerOptions = new MarkerOptions().position(location).title("Marker " + id);
+                                        MarkerOptions markerOptions = new MarkerOptions().position(location);
 
                                         Marker marker = mMap.addMarker(markerOptions);
                                         Objects.requireNonNull(marker).setTag(id);

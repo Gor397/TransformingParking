@@ -5,11 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#222222"
     tools:context=".EditProfileActivity">
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:scrollbars="vertical"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,6 +41,7 @@
                 android:layout_marginTop="16dp"
                 android:labelFor="@+id/editTextName"
                 android:text="@string/full_name"
+                android:textColor="#FFFFFF"
                 android:textSize="25sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageViewProfilePic" />
@@ -48,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:ems="10"
+                android:textColor="#FFFFFF"
                 android:importantForAutofill="no"
                 android:inputType="text"
                 app:layout_constraintStart_toStartOf="@+id/textViewName"
@@ -60,6 +65,7 @@
                 android:layout_marginTop="38dp"
                 android:labelFor="@+id/editTextPhone"
                 android:text="@string/phone_number"
+                android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="@+id/editTextName"
                 app:layout_constraintTop_toBottomOf="@+id/buttonSave" />
@@ -70,6 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:ems="10"
+                android:textColor="#FFFFFF"
                 android:importantForAutofill="no"
                 android:inputType="phone"
                 app:layout_constraintStart_toStartOf="@+id/textViewPhone"
@@ -80,7 +87,7 @@
                 android:id="@+id/textViewNameErrMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="4dp"
                 android:textColor="@color/quantum_googred"
                 app:layout_constraintStart_toStartOf="@+id/editTextName"
                 app:layout_constraintTop_toBottomOf="@+id/editTextName" />
@@ -89,7 +96,7 @@
                 android:id="@+id/textViewPhoneErrMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="4dp"
                 android:textColor="@color/quantum_googred"
                 app:layout_constraintStart_toStartOf="@+id/editTextPhone"
                 app:layout_constraintTop_toBottomOf="@+id/editTextPhone" />
@@ -98,6 +105,7 @@
                 android:id="@+id/buttonSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:enabled="false"
                 android:text="@string/save"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -110,8 +118,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/change_phone_number"
                 android:enabled="false"
+                android:text="@string/change_phone_number"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.493"
                 app:layout_constraintStart_toStartOf="parent"

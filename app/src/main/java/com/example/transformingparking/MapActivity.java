@@ -44,7 +44,7 @@ public class MapActivity extends AppCompatActivity {
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        testBtn = findViewById(R.id.test_pay_btn);
+//        testBtn = findViewById(R.id.test_pay_btn);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.transformingparking.ui.myProfile;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,11 +54,11 @@ public class MyProfileFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private Button addParkingBtn;
-    private Button settingsBtn;
+    private ImageButton settingsBtn;
     private TextView name;
     private TextView phone;
     private ImageView profilePic;
-    private Button editBtn;
+    private ImageButton editBtn;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MyProfileViewModel myProfileViewModel = new ViewModelProvider(this).get(MyProfileViewModel.class);
@@ -74,15 +76,22 @@ public class MyProfileFragment extends Fragment {
 
         StorageReference imageRef = storageReference.child("profile_pics").child(user.getUid());
 
+        ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Glide.with(requireView()).load(uri).into(profilePic);
+                progressDialog.cancel();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 // TODO Handle the error
+                progressDialog.cancel();
             }
         });
 

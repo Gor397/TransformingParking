@@ -97,6 +97,7 @@ public class SignInActivity extends AppCompatActivity {
                 Intent intent = new Intent(SignInActivity.this, VerifyCodeActivity.class);
                 intent.putExtra("verificationId", mVerificationId);
                 startActivity(intent);
+                progressDialog.cancel();
             }
         });
     }

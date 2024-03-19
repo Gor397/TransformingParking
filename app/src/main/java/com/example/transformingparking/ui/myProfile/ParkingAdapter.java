@@ -3,6 +3,7 @@ package com.example.transformingparking.ui.myProfile;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -82,9 +83,21 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        viewHolder.getTextView()
-                .setText(String.format("%s%s", localDataSet.get(position).get("price"), view.getContext().getString(R.string.dram_per_hour)));
-        viewHolder.getDescriptionTextView().setText(Objects.requireNonNull(localDataSet.get(position).get("additional_info")).toString());
+        ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        String price = String.format("%s%s", localDataSet.get(position).get("price"), view.getContext().getString(R.string.dram_per_hour));
+        viewHolder.getTextView().setText(price);
+
+        String description = Objects.requireNonNull(localDataSet.get(position).get("additional_info")).toString();
+        if (description.isEmpty()) {
+            viewHolder.getDescriptionTextView().setVisibility(View.GONE);
+        } else {
+            viewHolder.getDescriptionTextView().setText(description);
+        }
+
         StorageReference imageRef = storageReference.child("parking_pics").child((String) Objects.requireNonNull(localDataSet.get(position).get("id")));
 
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -92,11 +105,13 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
             public void onSuccess(Uri uri) {
                 // Load the image into the ImageView using Glide
                 Glide.with(view).load(uri).into(viewHolder.getImageView());
+                progressDialog.cancel();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 // TODO Handle the error
+                progressDialog.cancel();
             }
         });
     }

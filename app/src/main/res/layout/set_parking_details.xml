@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".AddParkingActivity">
 
     <ScrollView
@@ -24,6 +25,7 @@
                 android:layout_marginTop="92dp"
                 android:text="@string/price_per_hour_dram"
                 android:textSize="18sp"
+                android:textColor="@color/quantum_grey300"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/pic" />
 
@@ -34,14 +36,13 @@
                 android:layout_marginStart="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView4"
                 app:layout_constraintStart_toEndOf="@+id/textView4"
-                app:layout_constraintTop_toTopOf="@+id/textView4"
-                tools:ignore="MissingConstraints" />
+                app:layout_constraintTop_toTopOf="@+id/textView4" />
 
             <ImageView
                 android:id="@+id/pic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:importantForAccessibility="no"
+                android:adjustViewBounds="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +54,7 @@
                 android:layout_width="411dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
+                android:textColor="@color/quantum_grey300"
                 android:hint="@string/eg_phone_number_123456789"
                 app:layout_constraintTop_toBottomOf="@+id/textView5"
                 tools:layout_editor_absoluteX="0dp" />
@@ -65,6 +67,7 @@
                 android:layout_marginTop="24dp"
                 android:text="@string/additional_info"
                 android:textSize="20sp"
+                android:textColor="@color/quantum_grey300"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/price" />
 
@@ -77,6 +80,8 @@
                 android:layout_marginTop="50dp"
                 android:text="@string/submit"
                 android:textSize="30sp"
+                android:background="@drawable/submit_button_background"
+                android:enabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

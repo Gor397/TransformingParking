@@ -53,7 +53,7 @@
         %s!
     </string>
     <string name="price_with2points">"Price: "</string>
-    <string name="dram_per_hour">" dram per hour"</string>
+    <string name="dram_per_hour">" dram/hour"</string>
     <string name="google_maps_app_is_not_installed">Google Maps app is not installed</string>
     <string name="invalid_verification_code">Invalid Verification Code</string>
     <string name="authentication_failed">"Authentication failed: "</string>
@@ -66,4 +66,6 @@
     <string name="change_phone_number">Change Phone Number</string>
     <string name="invalid_code">Invalid Code</string>
     <string name="this_number_is_already_used_in_another_account">This number is already used in another account</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

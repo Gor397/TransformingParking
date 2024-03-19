@@ -13,24 +13,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/scan_qr_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Scan QR"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/get_my_location_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
+        android:layout_margin="16dp"
         android:src="@drawable/marker_sign"
+        android:backgroundTint="@color/quantum_purpleA700"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:importantForAccessibility="no" />
+        android:importantForAccessibility="no"
+        app:tint="@color/white" /> <!-- Set icon color to white -->
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/scan_qr_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/qr_code_icon"
+        android:scaleType="fitCenter"
+        android:backgroundTint="@color/quantum_purpleA700"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white" /> <!-- Set icon color to white -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

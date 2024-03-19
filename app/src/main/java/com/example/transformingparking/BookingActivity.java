@@ -1,6 +1,7 @@
 package com.example.transformingparking;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,12 +33,12 @@ import java.util.Objects;
 
 public class BookingActivity extends AppCompatActivity {
     private static final int MIN_RENTING_MINUTES = 20;
-    Button back_btn;
     String markerId;
     String ownerId;
     ImageView imageView;
     TextView priceView;
     TextView descriptionView;
+    TextView descriptionTitle;
     Button ownerAccBtn;
     Button directionsBtn;
 
@@ -51,17 +52,22 @@ public class BookingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking_view);
 
-        back_btn = findViewById(R.id.back_btn);
         priceView = findViewById(R.id.price1);
         descriptionView = findViewById(R.id.description1);
         imageView = findViewById(R.id.imageView);
         ownerAccBtn = findViewById(R.id.open_profile);
         directionsBtn = findViewById(R.id.directions_btn);
+        descriptionTitle = findViewById(R.id.descriptionTitle);
 
         Intent intent = getIntent();
         if (intent != null) {
             markerId = intent.getStringExtra("markerId");
         }
+
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         db.collection("parking_spaces").document(markerId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -81,18 +87,25 @@ public class BookingActivity extends AppCompatActivity {
                         setOwner();
 
                         priceView.setText(MessageFormat.format("{0}{1}{2}", getString(R.string.price_with2points), price, getString(R.string.dram_per_hour)));
-                        descriptionView.setText(description);
-
+                        assert description != null;
+                        if (description.isEmpty()) {
+                            descriptionTitle.setVisibility(View.GONE);
+                            descriptionView.setVisibility(View.GONE);
+                        } else {
+                            descriptionView.setText(description);
+                        }
                         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
                                 // Load the image into the ImageView using Glide
                                 Glide.with(BookingActivity.this).load(uri).into(imageView);
+                                progressDialog.cancel();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                // Handle any errors
+                                // TODO Handle any errors
+                                progressDialog.cancel();
                             }
                         });
 
@@ -107,15 +120,6 @@ public class BookingActivity extends AppCompatActivity {
                     // Error getting document
                     // TODO Handle the error here
                 }
-            }
-        });
-
-        back_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent mapIntent = new Intent(BookingActivity.this, MapActivity.class);
-//                startActivity(mapIntent);
-                finish();
             }
         });
 

@@ -79,13 +79,7 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_edit_profile);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         profilePic = findViewById(R.id.imageViewProfilePic);
         nameView = findViewById(R.id.editTextName);
@@ -131,8 +125,9 @@ public class EditProfileActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 if (!checkUserName()) {
                     saveBtn.setEnabled(false);
-                } else
+                } else {
                     saveBtn.setEnabled(selectedImageUri != null || !s.toString().equals(current_name_str));
+                }
             }
         });
 
@@ -149,7 +144,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                changePhoneNumberBtn.setEnabled(!s.toString().equals(current_phone_str));
+                if (s.toString().isEmpty()) {
+                    phoneErrMessageView.setText(R.string.this_field_can_t_be_empty);
+                }
+                changePhoneNumberBtn.setEnabled(!s.toString().equals(current_phone_str) && !s.toString().isEmpty());
             }
         });
 

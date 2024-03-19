@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,8 +33,8 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView nameView;
     private TextView phoneNumberView;
-    private Button callBtn;
-    private Button msgBtn;
+    private ImageButton callBtn;
+    private ImageButton msgBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
