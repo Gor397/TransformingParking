@@ -68,4 +68,6 @@
     <string name="this_number_is_already_used_in_another_account">This number is already used in another account</string>
     <string name="delete_account">Delete Account</string>
     <string name="sign_out">Sign Out</string>
+    <string name="dram">dram</string>
+    <string name="to_exit_the_garage_parking_spot_scan_the_qr_code_again_a_payment_window_will_then_open_once_payment_is_completed_the_device_will_open_the_entry">To exit the garage/parking spot, scan the QR code again. A payment window will then open. Once payment is completed, the device will open the entry.</string>
 </resources>

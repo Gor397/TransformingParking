@@ -14,10 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.zxing.Result;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
-import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -28,6 +29,7 @@ import java.io.IOException;
 public class ScanQRActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 200;
     private CompoundBarcodeView barcodeView;
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +76,10 @@ public class ScanQRActivity extends AppCompatActivity {
                 sendGetRequest(
                         serverURL +
                                 "?parking_id=" + parkingId +
+                                "&client_id=" + user.getUid() +
                                 "&status=" + status +
-                                "&secret=" + secret);
+                                "&secret=" + secret,
+                        parkingId);
             }
         });
     }
@@ -92,7 +96,7 @@ public class ScanQRActivity extends AppCompatActivity {
         barcodeView.pause();
     }
 
-    private void sendGetRequest(String url) {
+    private void sendGetRequest(String url, String parkingId) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -112,12 +116,22 @@ public class ScanQRActivity extends AppCompatActivity {
                     String responseData = response.body().string();
                     Log.d(TAG, "Http Code: " + httpCode);
                     Log.d(TAG, "Response: " + responseData);
-                    if (httpCode == 200 && responseData.equals("Data saved successfully")) {
-                        Intent paymentIntent = new Intent(ScanQRActivity.this, CheckoutActivity.class);
-                        startActivity(paymentIntent);
+                    if (httpCode == 201 && responseData.equals("Data saved successfully")) {
+                        Intent instructionsActivity = new Intent(ScanQRActivity.this, InstructionActivity.class);
+                        startActivity(instructionsActivity);
                         finish();
-                    } else if (httpCode == 404 && responseData.equals("Parking id not found")) {
-                        Toast.makeText(ScanQRActivity.this, "Invalid QR code", Toast.LENGTH_LONG).show();
+                    } else if (httpCode == 200) {
+                        long milliSeconds = (long) Double.parseDouble(responseData);
+                        Intent intent = new Intent(ScanQRActivity.this, PayActivity.class);
+                        intent.putExtra("milliSeconds", milliSeconds);
+                        intent.putExtra("parkingId", parkingId);
+                        startActivity(intent);
+                        finish();
+                    } else if (httpCode == 503 && responseData.equals("Parking is busy")) {
+                        Toast.makeText(ScanQRActivity.this, "Parking is busy", Toast.LENGTH_SHORT).show();
+                        startScanning();
+                    } else if (httpCode == 500) {
+                        Toast.makeText(ScanQRActivity.this, "Invalid QR code", Toast.LENGTH_SHORT).show();
                         startScanning();
                     }
                 } else {

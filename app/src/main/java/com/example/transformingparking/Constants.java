@@ -9,4 +9,5 @@ public class Constants {
     public static final int BUSY = 2;
     public static final int FREE = 3;
     public static final int CROP_IMAGE_REQUEST_CODE = 1;
+    public static final int PAID = 5;
 }
