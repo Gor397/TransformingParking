@@ -9,12 +9,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.okhttp.Callback;
@@ -23,6 +27,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -79,34 +85,28 @@ public class PayActivity extends AppCompatActivity {
         });
 
         payBtn.setOnClickListener(v -> {
-            OkHttpClient client = new OkHttpClient();
+            DocumentReference docRef = db.collection("parking_spaces").document(parkingId);
 
-            Request request = new Request.Builder()
-                    .url(Constants.SERVER_URL +
-                            "?parking_id=" + parkingId +
-                            "&status=" + Constants.PAID +
-                            "&secret=" + Constants.SERVER_SECRET)
-                    .build();
+            // Create a map to update the desired field
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("status", Constants.PAID);
 
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Request request, IOException e) {
-                    Log.e(TAG, "Error sending GET request: " + e.getMessage());
-                }
-
-                @Override
-                public void onResponse(Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        int httpCode = response.code();
-                        String responseData = response.body().string();
-                        Log.d(TAG, "Http Code: " + httpCode);
-                        Log.d(TAG, "Response: " + responseData);
-                        finish();
-                    } else {
-                        Log.e(TAG, "Failed to get response: " + response.code());
-                    }
-                }
-            });
+            // Perform the update operation
+            docRef.update(updates)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Document field successfully updated!");
+                            Toast.makeText(PayActivity.this, "Paid", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error updating document", e);
+                        }
+                    });
         });
     }
 

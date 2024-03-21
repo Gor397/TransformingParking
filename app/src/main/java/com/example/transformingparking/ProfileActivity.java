@@ -1,5 +1,6 @@
 package com.example.transformingparking;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -41,6 +42,11 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
 
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+
         userId = getIntent().getStringExtra("userId");
         profilePic = findViewById(R.id.imageViewProfilePic);
         nameView = findViewById(R.id.textViewUserName);
@@ -53,6 +59,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Uri uri) {
                 Glide.with(ProfileActivity.this).load(uri).into(profilePic);
+                progressDialog.cancel();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

@@ -104,14 +104,14 @@ public class MyProfileFragment extends Fragment {
                 });
 
         db.collection("parking_spaces").whereEqualTo("user_id", user.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
-            List<Map<String, Object>> posts = new ArrayList<>();
+            List<Map<String, Object>> parking_spots = new ArrayList<>();
             for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                Map<String, Object> post = document.getData();
-                post.put("id", document.getId());
-                posts.add(post);
+                Map<String, Object> parking = document.getData();
+                parking.put("id", document.getId());
+                parking_spots.add(parking);
             }
 
-            ParkingAdapter adapter = new ParkingAdapter(posts);
+            ParkingAdapter adapter = new ParkingAdapter(parking_spots, getContext());
             recyclerView.setAdapter(adapter);
         }).addOnFailureListener(e -> {
             // Handle failure
@@ -171,14 +171,14 @@ public class MyProfileFragment extends Fragment {
                 });
 
         db.collection("parking_spaces").whereEqualTo("user_id", user.getUid()).get().addOnSuccessListener(queryDocumentSnapshots -> {
-            List<Map<String, Object>> posts = new ArrayList<>();
+            List<Map<String, Object>> parking_spots = new ArrayList<>();
             for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                Map<String, Object> post = document.getData();
-                post.put("id", document.getId());
-                posts.add(post);
+                Map<String, Object> parking = document.getData();
+                parking.put("id", document.getId());
+                parking_spots.add(parking);
             }
 
-            ParkingAdapter adapter = new ParkingAdapter(posts);
+            ParkingAdapter adapter = new ParkingAdapter(parking_spots, getContext());
             recyclerView.setAdapter(adapter);
         }).addOnFailureListener(e -> {
             // Handle failure

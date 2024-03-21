@@ -186,10 +186,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                         Objects.requireNonNull(marker).setTag(id);
                                         addToMarkerList(marker);
                                     } else {
-                                        for (Marker marker : markerList) {
+                                        final int size = markerList.size();
+                                        for (int i = 0; i < size; i++) {
+                                            Marker marker = markerList.get(i);
                                             if (marker.getTag().equals(id)) {
                                                 marker.remove();
                                                 removeFromMarkerList(marker);
+                                                break;
                                             }
                                         }
                                     }
@@ -199,10 +202,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                     DocumentSnapshot removedDoc = snapshot.getDocument();
                                     String removed_id = removedDoc.getId();
 
-                                    for (Marker marker : markerList) {
-                                        if (marker.getTag() == removed_id) {
+                                    final int size = markerList.size();
+                                    for (int i = 0; i < size; i++) {
+                                        Marker marker = markerList.get(i);
+                                        if (marker.getTag().equals(removed_id)) {
                                             marker.remove();
-                                            markerList.remove(marker);
+                                            removeFromMarkerList(marker);
+                                            break;
                                         }
                                     }
                             }

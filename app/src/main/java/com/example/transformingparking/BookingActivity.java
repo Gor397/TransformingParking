@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class BookingActivity extends AppCompatActivity {
-    private static final int MIN_RENTING_MINUTES = 20;
     String markerId;
     String ownerId;
     ImageView imageView;
