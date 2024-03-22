@@ -111,31 +111,37 @@ public class ScanQRActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    int httpCode = response.code();
-                    String responseData = response.body().string();
-                    Log.d(TAG, "Http Code: " + httpCode);
-                    Log.d(TAG, "Response: " + responseData);
-                    if (httpCode == 201 && responseData.equals("Data saved successfully")) {
-                        Intent instructionsActivity = new Intent(ScanQRActivity.this, InstructionActivity.class);
-                        startActivity(instructionsActivity);
-                        finish();
-                    } else if (httpCode == 200) {
-                        long milliSeconds = (long) Double.parseDouble(responseData);
-                        Intent intent = new Intent(ScanQRActivity.this, PayActivity.class);
-                        intent.putExtra("milliSeconds", milliSeconds);
-                        intent.putExtra("parkingId", parkingId);
-                        startActivity(intent);
-                        finish();
-                    } else if (httpCode == 503 && responseData.equals("Parking is busy")) {
-                        Toast.makeText(ScanQRActivity.this, "Parking is busy", Toast.LENGTH_SHORT).show();
-                        startScanning();
-                    } else if (httpCode == 500) {
-                        Toast.makeText(ScanQRActivity.this, "Invalid QR code", Toast.LENGTH_SHORT).show();
-                        startScanning();
-                    }
+                int httpCode = response.code();
+                String responseData = response.body().string();
+                Log.d(TAG, "Http Code: " + httpCode);
+                Log.d(TAG, "Response: " + responseData);
+                if (httpCode == 201 && responseData.equals("Data saved successfully")) {
+                    Intent instructionsActivity = new Intent(ScanQRActivity.this, InstructionActivity.class);
+                    startActivity(instructionsActivity);
+                    finish();
+                } else if (httpCode == 200) {
+                    long milliSeconds = (long) Double.parseDouble(responseData);
+                    Intent intent = new Intent(ScanQRActivity.this, PayActivity.class);
+                    intent.putExtra("milliSeconds", milliSeconds);
+                    intent.putExtra("parkingId", parkingId);
+                    startActivity(intent);
+                    finish();
+                } else if (httpCode == 503 && responseData.equals("Parking is busy")) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(ScanQRActivity.this, "Parking is busy", Toast.LENGTH_SHORT).show();
+                            startScanning();
+                        }
+                    });
                 } else {
-                    Log.e(TAG, "Failed to get response: " + response.code());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(ScanQRActivity.this, "Invalid QR code", Toast.LENGTH_SHORT).show();
+                            startScanning();
+                        }
+                    });
                 }
             }
         });
