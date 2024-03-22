@@ -30,14 +30,42 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TransformingParking"
         tools:targetApi="31">
+
+        <!-- Declare your custom FirebaseMessagingService -->
+        <service
+            android:name=".Notifications.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Add the following meta-data to your application to enable receiving messages via Firebase -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+
+        <!-- Add the following service to your application to enable displaying notification messages -->
+        <service
+            android:name="com.google.firebase.components.ComponentDiscoveryService"
+            android:directBootAware="true"
+            android:exported="false">
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <intent-filter>
+                <action android:name="androidx.startup.InitializationException" />
+            </intent-filter>
+        </service>
+
         <activity
-            android:name=".InstructionActivity"
+            android:name=".ParkingActivities.InstructionActivity"
             android:exported="false" />
         <activity
-            android:name=".PayActivity"
+            android:name=".ParkingActivities.PayActivity"
             android:exported="false" />
         <activity
-            android:name=".EditProfileActivity"
+            android:name=".AccountActivities.EditProfileActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -53,38 +81,38 @@
             android:value="true" />
 
         <activity
-            android:name=".ScanQRActivity"
+            android:name=".ParkingActivities.ScanQRActivity"
             android:exported="false" />
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".AccountActivities.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".signIn.VerifyCodeActivity"
             android:exported="false" />
         <activity
-            android:name=".AddParkingActivity"
+            android:name=".ParkingActivities.AddParkingActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".MapActivity"
+            android:name=".ParkingActivities.MapActivity"
             android:exported="false"
             android:label="@string/title_activity_map" />
         <activity
             android:name=".signIn.SignInActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".AccountActivities.ProfileActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".BookingActivity"
+            android:name=".ParkingActivities.BookingActivity"
             android:exported="false" />
 
         <meta-data

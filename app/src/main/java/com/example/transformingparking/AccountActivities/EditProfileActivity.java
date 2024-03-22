@@ -1,4 +1,4 @@
-package com.example.transformingparking;
+package com.example.transformingparking.AccountActivities;
 
 import static android.content.ContentValues.TAG;
 import static com.example.transformingparking.Constants.CROP_IMAGE_REQUEST_CODE;
@@ -18,13 +18,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -33,8 +29,9 @@ import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
-import com.example.transformingparking.signIn.SignInActivity;
+import com.example.transformingparking.R;
 import com.example.transformingparking.signIn.VerifyCodeActivity;
+import com.example.transformingparking.util.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -166,6 +163,7 @@ public class EditProfileActivity extends AppCompatActivity {
             updates.put("name", nameView.getText().toString());
 
             docRef.update(updates);
+            Util.setUserName(nameView.getText().toString());
 
             if (selectedImageUri != null) {
                 uploadProfilePictureToStorage(user.getUid(), selectedImageUri);

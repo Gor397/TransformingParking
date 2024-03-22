@@ -1,4 +1,4 @@
-package com.example.transformingparking;
+package com.example.transformingparking.ParkingActivities;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.transformingparking.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.Nullable;

@@ -15,16 +15,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.transformingparking.AddParkingActivity;
-import com.example.transformingparking.EditProfileActivity;
-import com.example.transformingparking.R;
-import com.example.transformingparking.SettingsActivity;;
+import com.example.transformingparking.ParkingActivities.AddParkingActivity;
+import com.example.transformingparking.AccountActivities.EditProfileActivity;
+import com.example.transformingparking.AccountActivities.SettingsActivity;;
 import com.example.transformingparking.databinding.FragmentMyProfileBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,7 +36,6 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MyProfileFragment extends Fragment {
 

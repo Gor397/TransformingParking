@@ -1,4 +1,4 @@
-package com.example.transformingparking;
+package com.example.transformingparking.ParkingActivities;
 
 import static android.content.ContentValues.TAG;
 
@@ -14,8 +14,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.transformingparking.Constants;
+import com.example.transformingparking.Notifications.NotificationHelper;
+import com.example.transformingparking.Notifications.NotificationModel;
+import com.example.transformingparking.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
@@ -30,6 +38,7 @@ public class ScanQRActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 200;
     private CompoundBarcodeView barcodeView;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +125,27 @@ public class ScanQRActivity extends AppCompatActivity {
                 Log.d(TAG, "Http Code: " + httpCode);
                 Log.d(TAG, "Response: " + responseData);
                 if (httpCode == 201 && responseData.equals("Data saved successfully")) {
+                    db.collection("parking_spaces").document(parkingId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    String ownerId = (String) document.get("user_id");
+                                    NotificationModel notificationModel = new NotificationModel("You've got a new client", user.getDisplayName() + " rented your garage", ownerId);
+                                    NotificationHelper notificationHelper = new NotificationHelper(getApplicationContext());
+                                    notificationHelper.makeNotification(notificationModel);
+                                } else {
+                                    // Document does not exist
+                                    // TODO Handle the case here
+                                }
+                            } else {
+                                // Error getting document
+                                // TODO Handle the error here
+                            }
+                        }
+                    });
+
                     Intent instructionsActivity = new Intent(ScanQRActivity.this, InstructionActivity.class);
                     startActivity(instructionsActivity);
                     finish();

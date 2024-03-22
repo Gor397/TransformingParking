@@ -1,10 +1,12 @@
-package com.example.transformingparking;
+package com.example.transformingparking.ParkingActivities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.transformingparking.R;
 
 public class InstructionActivity extends AppCompatActivity {
     private Button okBtn;

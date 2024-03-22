@@ -9,24 +9,66 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.transformingparking.Notifications.NotificationModel;
+import com.example.transformingparking.R;
 import com.example.transformingparking.databinding.FragmentNotificationsBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class NotificationsFragment extends Fragment {
 
     private FragmentNotificationsBinding binding;
+    private RecyclerView recyclerView;
+    private NotificationAdapter adapter;
+    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        NotificationsViewModel notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
 
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textNotifications;
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        recyclerView = binding.recyclerViewNotifications;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        fetchNotifications();
+
         return root;
+    }
+
+    private void fetchNotifications() {
+        CollectionReference notificationsRef = firestore.collection("Notifications");
+        Query query = notificationsRef.whereEqualTo("ownerId", userId);
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            List<Map<String, Object>> notifications = new ArrayList<>();
+            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                Map<String, Object> notification = documentSnapshot.getData();
+                notifications.add(notification);
+            }
+
+            if (notifications.isEmpty()) {
+                final TextView textView = binding.textNotifications;
+                textView.setVisibility(View.VISIBLE);
+                textView.setText(R.string.you_don_t_have_any_notifications_yet);
+            } else {
+                adapter = new NotificationAdapter(notifications);
+                recyclerView.setAdapter(adapter);
+            }
+        }).addOnFailureListener(e -> {
+            // Handle failure, e.g., display error message to user or log error
+        });
     }
 
     @Override

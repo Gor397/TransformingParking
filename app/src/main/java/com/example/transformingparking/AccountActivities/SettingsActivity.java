@@ -1,4 +1,4 @@
-package com.example.transformingparking;
+package com.example.transformingparking.AccountActivities;
 
 import static android.content.ContentValues.TAG;
 
@@ -12,6 +12,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.example.transformingparking.R;
 import com.example.transformingparking.signIn.SignInActivity;
 import com.example.transformingparking.signIn.VerifyCodeActivity;
 import com.google.firebase.FirebaseException;

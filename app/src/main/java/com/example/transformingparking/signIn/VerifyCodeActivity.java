@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.transformingparking.MainActivity;
 import com.example.transformingparking.R;
+import com.example.transformingparking.util.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,10 +28,13 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -78,6 +82,27 @@ public class VerifyCodeActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setUserFCMToken(FirebaseUser firebaseUser) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        String fcmToken = task.getResult();
+
+                        Map<String, Object> userMetadata = new HashMap<>();
+                        userMetadata.put("FCMToken", fcmToken);
+
+                        db.collection("users").document(firebaseUser.getUid())
+                                .set(userMetadata, SetOptions.merge())
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("Save Metadata", "User metadata saved successfully");
+                                })
+                                .addOnFailureListener(e -> Log.e("Save Metadata", "Error saving user metadata", e));
+                    } else {
+                        Log.e("FCM Token", "Failed to get FCM token", task.getException());
+                    }
+                });
     }
 
     private void verifyPhoneNumberWithCode(String verificationId, String code) {
@@ -209,6 +234,8 @@ public class VerifyCodeActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     DocumentSnapshot document = task.getResult();
                                     if (document.exists() && document.contains("name")) {
+                                        Util.setUserName(document.getString("name"));
+                                        setUserFCMToken(user);
                                         Intent intent = new Intent(VerifyCodeActivity.this, MainActivity.class);
                                         startActivity(intent);
                                         finish();

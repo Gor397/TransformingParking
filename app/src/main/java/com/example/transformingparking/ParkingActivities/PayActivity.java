@@ -1,4 +1,4 @@
-package com.example.transformingparking;
+package com.example.transformingparking.ParkingActivities;
 
 import static android.content.ContentValues.TAG;
 
@@ -14,19 +14,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.transformingparking.Constants;
+import com.example.transformingparking.Notifications.NotificationHelper;
+import com.example.transformingparking.Notifications.NotificationModel;
+import com.example.transformingparking.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -42,6 +43,7 @@ public class PayActivity extends AppCompatActivity {
     Button payBtn;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +100,28 @@ public class PayActivity extends AppCompatActivity {
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "Document field successfully updated!");
                             Toast.makeText(PayActivity.this, "Paid", Toast.LENGTH_SHORT).show();
+
+                            db.collection("parking_spaces").document(parkingId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists()) {
+                                            String ownerId = (String) document.get("user_id");
+                                            NotificationModel notificationModel = new NotificationModel("Parking fee is paid", user.getDisplayName() + " paid parking fee", ownerId);
+                                            NotificationHelper notificationHelper = new NotificationHelper(getApplicationContext());
+                                            notificationHelper.makeNotification(notificationModel);
+                                        } else {
+                                            // Document does not exist
+                                            // TODO Handle the case here
+                                        }
+                                    } else {
+                                        // Error getting document
+                                        // TODO Handle the error here
+                                    }
+                                }
+                            });
+
                             finish();
                         }
                     })

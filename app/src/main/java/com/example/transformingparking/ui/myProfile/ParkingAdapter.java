@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.transformingparking.Constants;
-import com.example.transformingparking.ProfileActivity;
+import com.example.transformingparking.AccountActivities.ProfileActivity;
 import com.example.transformingparking.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

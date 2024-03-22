@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -23,10 +22,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.transformingparking.BookingActivity;
-import com.example.transformingparking.Constants;
+import com.example.transformingparking.ParkingActivities.BookingActivity;
 import com.example.transformingparking.R;
-import com.example.transformingparking.ScanQRActivity;
+import com.example.transformingparking.ParkingActivities.ScanQRActivity;
 import com.example.transformingparking.databinding.FragmentHomeBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
