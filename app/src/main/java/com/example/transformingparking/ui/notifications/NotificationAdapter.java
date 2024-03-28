@@ -41,6 +41,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+
         holder.bind(msg, dt);
     }
 

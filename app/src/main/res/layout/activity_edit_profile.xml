@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:labelFor="@+id/editTextName"
+                android:labelFor="@+id/editTextIDramName"
                 android:text="@string/full_name"
                 android:textColor="#FFFFFF"
                 android:textSize="25sp"
@@ -47,7 +47,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/imageViewProfilePic" />
 
             <EditText
-                android:id="@+id/editTextName"
+                android:id="@+id/editTextIDramName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -67,7 +67,7 @@
                 android:text="@string/phone_number"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
-                app:layout_constraintStart_toStartOf="@+id/editTextName"
+                app:layout_constraintStart_toStartOf="@+id/editTextIDramName"
                 app:layout_constraintTop_toBottomOf="@+id/buttonSave" />
 
             <EditText
@@ -89,8 +89,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textColor="@color/quantum_googred"
-                app:layout_constraintStart_toStartOf="@+id/editTextName"
-                app:layout_constraintTop_toBottomOf="@+id/editTextName" />
+                app:layout_constraintStart_toStartOf="@+id/editTextIDramName"
+                app:layout_constraintTop_toBottomOf="@+id/editTextIDramName" />
 
             <TextView
                 android:id="@+id/textViewPhoneErrMessage"

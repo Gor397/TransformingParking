@@ -10,12 +10,16 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.SearchView;
@@ -64,7 +68,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
     ImageView parkingPic;
     Button back_btn2;
     SupportMapFragment mapFragment;
-//    AutocompleteSupportFragment autocompleteFragment;
+    //    AutocompleteSupportFragment autocompleteFragment;
     NumberPicker priceField;
     LatLng parkingCoordinates;
     Uri selectedImageUri;
@@ -72,6 +76,10 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
     SearchView searchView;
     Button nextBtn;
     Button submitBtn;
+    EditText iDramId;
+    EditText iDramName;
+    TextView idramNameErrMsg;
+    TextView idramIDErrMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,6 +187,17 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                 priceField.setWrapSelectorWheel(false);
                 priceField.setDisplayedValues(prices);
 
+                iDramId = findViewById(R.id.editTextNumberIdramId);
+                iDramName = findViewById(R.id.editTextIDramName);
+
+                iDramId.addTextChangedListener(textWatcher);
+                iDramId.addTextChangedListener(idramIDWatcher);
+                iDramName.addTextChangedListener(textWatcher);
+                iDramName.addTextChangedListener(idramNameWatcher);
+
+                idramIDErrMsg = findViewById(R.id.textViewIdramIDErrMsg);
+                idramNameErrMsg = findViewById(R.id.textViewIdramNameErrMsg);
+
                 submitBtn = findViewById(R.id.submit);
                 submitBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -198,6 +217,8 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                         parking_space.put("price", Integer.parseInt(prices[priceField.getValue()]));
                         parking_space.put("status", PENDING);
                         parking_space.put("user_id", user.getUid());
+                        parking_space.put("idramID", iDramId.getText().toString());
+                        parking_space.put("idramName", iDramName.getText().toString());
 
                         database.collection("parking_spaces")
                                 .add(parking_space)
@@ -226,9 +247,17 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                     .override(screenWidth, Target.SIZE_ORIGINAL);
 
             Glide.with(this).load(cropped).apply(options).into(imageView);
-            submitBtn.setEnabled(true);
+
+            // check if the text fields are ok
+            String iDramIdString = iDramId.getText().toString();
+            String iDramNameString = iDramName.getText().toString();
+
+            boolean isiDramIdValid = iDramIdString.length() == 9;
+            boolean isEditText2Valid = iDramNameString.length() > 4;
+
+            submitBtn.setEnabled(isiDramIdValid && isEditText2Valid && selectedImageUri != null);
         } else {
-            submitBtn.setEnabled(false);
+
         }
     });
 
@@ -288,4 +317,90 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
                 });
     }
 
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            // No need to implement
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            // Check conditions and enable/disable the button accordingly
+            String iDramIdString = iDramId.getText().toString();
+            String iDramNameString = iDramName.getText().toString();
+
+            boolean isIdramIdValid = iDramIdString.length() == 9;
+            boolean isIdramNameValid = iDramNameString.length() > 4;
+
+            submitBtn.setEnabled(isIdramIdValid && isIdramNameValid && selectedImageUri != null);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            // No need to implement
+        }
+    };
+
+    private TextWatcher idramNameWatcher = new TextWatcher() {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String iDramNameString = iDramName.getText().toString();
+            boolean isIdramNameValid = iDramNameString.length() > 4;
+
+            if (!iDramNameString.isEmpty()) {
+                for (char c : iDramNameString.toCharArray()) {
+                    if (!Character.isLetter(c) && !Character.isSpaceChar(c)) {
+                        idramNameErrMsg.setText(R.string.this_field_should_contain_only_letters);
+                        idramNameErrMsg.setVisibility(View.VISIBLE);
+                        break;
+                    } else if (!isIdramNameValid) {
+                        idramNameErrMsg.setText(R.string.write_your_name_as_it_is_written_in_your_idram_account);
+                        idramNameErrMsg.setVisibility(View.VISIBLE);
+                    } else {
+                        idramNameErrMsg.setVisibility(View.GONE);
+                    }
+                }
+            } else {
+                idramNameErrMsg.setText(R.string.this_field_can_t_be_empty);
+                idramNameErrMsg.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+    private TextWatcher idramIDWatcher = new TextWatcher() {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String iDramIdString = iDramId.getText().toString();
+
+            boolean isIdramIdValid = iDramIdString.length() == 9;
+
+            if (!isIdramIdValid) {
+                idramIDErrMsg.setVisibility(View.VISIBLE);
+            } else {
+                idramIDErrMsg.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 }

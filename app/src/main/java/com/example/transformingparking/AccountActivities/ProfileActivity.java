@@ -61,6 +61,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 // TODO Handle the error
+                progressDialog.cancel();
             }
         });
 

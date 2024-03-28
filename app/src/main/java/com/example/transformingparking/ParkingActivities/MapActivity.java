@@ -1,8 +1,10 @@
 package com.example.transformingparking.ParkingActivities;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,11 +26,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.math.BigDecimal;
+
 public class MapActivity extends AppCompatActivity {
 
     private ActivityMapBinding binding;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-    private Button testBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,26 +47,6 @@ public class MapActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_map);
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-
-//        testBtn = findViewById(R.id.test_pay_btn);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null) {
-            if (result.getContents() == null) {
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
-            } else {
-                // Handle scanned QR code data
-                String scannedData = result.getContents();
-                Toast.makeText(this, "Scanned: " + scannedData, Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
     @Override

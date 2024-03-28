@@ -30,7 +30,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TransformingParking"
         tools:targetApi="31">
-
+        <activity
+            android:name=".Notifications.NotificationItemActivity"
+            android:exported="false" />
         <!-- Declare your custom FirebaseMessagingService -->
         <service
             android:name=".Notifications.MyFirebaseMessagingService"
@@ -38,14 +40,10 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
-
-        <!-- Add the following meta-data to your application to enable receiving messages via Firebase -->
+        </service> <!-- Add the following meta-data to your application to enable receiving messages via Firebase -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" />
-
-        <!-- Add the following service to your application to enable displaying notification messages -->
+            android:value="@string/default_notification_channel_id" /> <!-- Add the following service to your application to enable displaying notification messages -->
         <service
             android:name="com.google.firebase.components.ComponentDiscoveryService"
             android:directBootAware="true"
@@ -53,6 +51,7 @@
             <meta-data
                 android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar"
                 android:value="com.google.firebase.components.ComponentRegistrar" />
+
             <intent-filter>
                 <action android:name="androidx.startup.InitializationException" />
             </intent-filter>
@@ -71,11 +70,6 @@
         <activity
             android:name=".signIn.WriteNameActivty"
             android:exported="false" />
-        <activity
-            android:name=".CheckoutActivity"
-            android:exported="false"
-            android:label="@string/title_activity_checkout"
-            android:theme="@style/Theme.TransformingParking" /> <!-- This element is required to enable Google Pay in your app. -->
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />

@@ -79,7 +79,7 @@ public class EditProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
 
         profilePic = findViewById(R.id.imageViewProfilePic);
-        nameView = findViewById(R.id.editTextName);
+        nameView = findViewById(R.id.editTextIDramName);
         phoneView = findViewById((R.id.editTextPhone));
         nameErrMessageView = findViewById(R.id.textViewNameErrMessage);
         phoneErrMessageView = findViewById(R.id.textViewPhoneErrMessage);

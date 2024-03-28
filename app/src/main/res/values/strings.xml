@@ -72,4 +72,12 @@
     <string name="to_exit_the_garage_parking_spot_scan_the_qr_code_again_a_payment_window_will_then_open_once_payment_is_completed_the_device_will_open_the_entry">To exit the garage/parking spot, scan the QR code again. A payment window will then open. Once payment is completed, the device will open the entry.</string>
     <string name="default_notification_channel_id">your_channel_id</string>
     <string name="you_don_t_have_any_notifications_yet">You don\'t have any notifications yet</string>
+    <string name="idram_id">Idram ID</string>
+    <string name="name">Name</string>
+    <string name="idram_details">Idram details</string>
+    <string name="please_be_careful_while_writing_idram_id_and_name">Please be careful while writing idram ID and name</string>
+    <string name="name_lastname">Name Lastname</string>
+    <string name="_123456789">123456789</string>
+    <string name="write_your_9_digit_id">Write your 9 digit ID</string>
+    <string name="write_your_name_as_it_is_written_in_your_idram_account">Write your name as it is written in your Idram account</string>
 </resources>
