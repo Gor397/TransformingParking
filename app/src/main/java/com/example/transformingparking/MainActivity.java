@@ -43,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
         if (!checkPermissions()) {
             // Request permissions if not granted
             requestPermissions();
-        } else {
-            // Permissions already granted
-            // You can proceed with sending notifications
         }
 
         user = auth.getCurrentUser();

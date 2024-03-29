@@ -29,8 +29,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        FirebaseFirestore.getInstance().collection("users")
-                .document(currentUser.getUid()).update("FCMToken", token);
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance().collection("users")
+                    .document(currentUser.getUid()).update("FCMToken", token);
+        }
     }
 
     @Override
@@ -56,7 +58,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.mipmap.my_ic_launcher)
                         .setContentTitle(title)
                         .setContentText(body)
                         .setAutoCancel(true)
