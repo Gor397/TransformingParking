@@ -25,19 +25,25 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseFirestore database = FirebaseFirestore.getInstance();
     FirebaseUser user;
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
-    private static final String[] PERMISSIONS = {Manifest.permission.POST_NOTIFICATIONS};
+    private List<String> permissionsRequired = new ArrayList<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize permissions required based on Android version
+        initializePermissions();
 
         if (!checkPermissions()) {
             // Request permissions if not granted
@@ -75,9 +81,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initializePermissions() {
+        // Add POST_NOTIFICATIONS permission conditionally for Android 13 (API level 33) and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionsRequired.add(Manifest.permission.POST_NOTIFICATIONS);
+        }
+    }
+
     private boolean checkPermissions() {
         // Check if the necessary permissions are granted
-        for (String permission : PERMISSIONS) {
+        for (String permission : permissionsRequired) {
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
@@ -87,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestPermissions() {
         // Request necessary permissions
-        ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_REQUEST_CODE);
+        ActivityCompat.requestPermissions(this, permissionsRequired.toArray(new String[0]), PERMISSION_REQUEST_CODE);
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
