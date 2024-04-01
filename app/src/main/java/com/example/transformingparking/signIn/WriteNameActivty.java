@@ -41,7 +41,6 @@ public class WriteNameActivty extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth;
 
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +66,6 @@ public class WriteNameActivty extends AppCompatActivity {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void addNameToDB(String string) {
         DocumentReference docRef = db.collection("users").document(user.getUid());
 

@@ -45,8 +45,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             sendNotification(notificationTitle, notificationBody);
         }
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    
     private void sendNotification(String title, String body) {
         Log.d("MyFirebaseMessagingService", "sendNotification: Method started");
         Intent intent = new Intent(this, MainActivity.class);
