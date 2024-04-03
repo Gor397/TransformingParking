@@ -9,4 +9,5 @@
     <color name="black_overlay">#66000000</color>
     <color name="dark_purple">#6200EE</color>
     <color name="dark_orange">#FF8C00</color>
+    <color name="bottom_nav_item_color">#FFFFFF</color>
 </resources>

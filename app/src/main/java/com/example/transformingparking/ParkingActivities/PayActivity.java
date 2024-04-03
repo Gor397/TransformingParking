@@ -102,15 +102,8 @@ public class PayActivity extends AppCompatActivity {
                         String receiverID = Objects.requireNonNull(documentSnapshot.get("idramId")).toString();
                         String receiverName = Objects.requireNonNull(documentSnapshot.get("idramName")).toString();
                         BigDecimal amount = new BigDecimal(costView.getText().toString().replaceAll("[^0-9]", ""));
-                        Intent paymentIntent = getPaymentIntent(amount, null, receiverName, receiverID);
 
-                        try {
-                            startActivityForResult(paymentIntent, 0);
-                        } catch (ActivityNotFoundException ex) {
-                            Toast.makeText(PayActivity.this, "Idram app is not installed on the user device, or external payments are not supported by the current app version", Toast.LENGTH_SHORT).show();
-                            Log.e("IDRAM", "Idram app is not installed on the user device, " +
-                                    "or external payments are not supported by the current app version");
-                        }
+
                     }
                 }
             });
@@ -137,86 +130,53 @@ public class PayActivity extends AppCompatActivity {
         return formattedTime.toString().trim();
     }
 
-    private Intent getPaymentIntent(BigDecimal amount, BigDecimal tip, String receiverName, String receiverId) {
-        // e.g idramapp://payment/?receiverName=ggTaxy&receiverId=1234567890&amount=1500&tip=150
+    private void doPaymentAndOpenTheExit() {
+        DocumentReference docRef = db.collection("parking_spaces").document(parkingId);
 
-        Uri.Builder uriBuilder = new Uri.Builder()
-                .scheme("idramapp")
-                .authority("payment")
-                .appendQueryParameter("receiverName", receiverName)
-                .appendQueryParameter("receiverId", receiverId)
-                .appendQueryParameter("title", "Parking fee")
-                .appendQueryParameter("amount", amount.toPlainString());
+        // Create a map to update the desired field
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", Constants.PAID);
 
-        if (tip != null) {
-            uriBuilder.appendQueryParameter("tip", tip.toPlainString());
-        }
+        // Perform the update operation
+        docRef.update(updates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Document field successfully updated!");
+                        Toast.makeText(PayActivity.this, "Paid", Toast.LENGTH_SHORT).show();
 
-        return new Intent(Intent.ACTION_VIEW, uriBuilder.build());
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Activity.RESULT_OK) {
-            DocumentReference docRef = db.collection("parking_spaces").document(parkingId);
-
-            // Create a map to update the desired field
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("status", Constants.PAID);
-
-            // Perform the update operation
-            docRef.update(updates)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "Document field successfully updated!");
-                            Toast.makeText(PayActivity.this, "Paid", Toast.LENGTH_SHORT).show();
-
-                            db.collection("parking_spaces").document(parkingId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        DocumentSnapshot document = task.getResult();
-                                        if (document.exists()) {
-                                            String ownerId = (String) document.get("user_id");
-                                            NotificationModel notificationModel = new NotificationModel("Parking fee is paid", user.getDisplayName() + " paid parking fee (" + costView.getText().toString() + ")", ownerId);
-                                            NotificationHelper notificationHelper = new NotificationHelper(getApplicationContext());
-                                            notificationHelper.makeNotification(notificationModel);
-                                        } else {
-                                            // Document does not exist
-                                            // TODO Handle the case here
-                                        }
+                        db.collection("parking_spaces").document(parkingId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if (document.exists()) {
+                                        String ownerId = (String) document.get("user_id");
+                                        NotificationModel notificationModel = new NotificationModel("Parking fee is paid", user.getDisplayName() + " paid parking fee (" + costView.getText().toString() + ")", ownerId);
+                                        NotificationHelper notificationHelper = new NotificationHelper(getApplicationContext());
+                                        notificationHelper.makeNotification(notificationModel);
                                     } else {
-                                        // Error getting document
-                                        // TODO Handle the error here
+                                        // Document does not exist
+                                        // TODO Handle the case here
                                     }
+                                } else {
+                                    // Error getting document
+                                    // TODO Handle the error here
                                 }
-                            });
+                            }
+                        });
 
-                            finish();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error updating document", e);
-                        }
-                    });
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
 
-            Log.i("IDram", "Payment done.");
-            Toast.makeText(this, "Payment done.", Toast.LENGTH_SHORT).show();
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-            Log.i("IDram", "The user canceled.");
-            Toast.makeText(this, "The user canceled.", Toast.LENGTH_SHORT).show();
-        } else {
-            Log.i("IDram", "An invalid Uri was submitted. Please check URI.");
-            Toast.makeText(this, "An invalid Uri was submitted. Please check URI.", Toast.LENGTH_SHORT).show();
-        }
-//        else if (resultCode == RESULT_DATA_INVALID) {
-//            Log.i("IDram", "An invalid Uri was submitted. Please check URI.");
-//        }
+        Log.i("IDram", "Payment done.");
+        Toast.makeText(this, "Payment done.", Toast.LENGTH_SHORT).show();
     }
-
 }
