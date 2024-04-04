@@ -75,7 +75,7 @@
 
 
             <Button
-                android:id="@+id/submit"
+                android:id="@+id/saveBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
@@ -87,104 +87,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewIdramNameErrMsg"
+                app:layout_constraintTop_toBottomOf="@+id/additional_info"
                 app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/textViewBankCardDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="34dp"
-                android:textColor="@color/white"
-                android:text="@string/idram_details"
-                android:textSize="32sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/additional_info" />
-
-            <TextView
-                android:id="@+id/textViewIdramId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/idram_id"
-                android:textColor="@color/quantum_grey300"
-                android:textSize="22sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewWarning" />
-
-            <EditText
-                android:id="@+id/editTextNumberIdramId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:ems="9"
-                android:hint="@string/_123456789"
-                android:textColorHint="@color/quantum_grey600"
-                android:textColor="@color/quantum_grey300"
-                android:maxLength="9"
-                android:inputType="number"
-                app:layout_constraintStart_toStartOf="@+id/textViewIdramId"
-                app:layout_constraintTop_toBottomOf="@+id/textViewIdramId" />
-
-            <TextView
-                android:id="@+id/textViewName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="14dp"
-                android:text="@string/name"
-                android:textColor="@color/quantum_grey300"
-                android:textSize="22sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewIdramIDErrMsg" />
-
-            <EditText
-                android:id="@+id/editTextIDramName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:ems="15"
-                android:hint="@string/name_lastname"
-                android:textColorHint="@color/quantum_grey600"
-                android:textColor="@color/quantum_grey300"
-                android:inputType="text"
-                app:layout_constraintStart_toStartOf="@+id/textViewName"
-                app:layout_constraintTop_toBottomOf="@+id/textViewName" />
-
-            <TextView
-                android:id="@+id/textViewWarning"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="14dp"
-                android:textColor="@color/quantum_yellowA100"
-                android:text="@string/please_be_careful_while_writing_idram_id_and_name"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewBankCardDetails" />
-
-            <TextView
-                android:id="@+id/textViewIdramIDErrMsg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/write_your_9_digit_id"
-                android:visibility="gone"
-                android:textColor="@color/quantum_googred"
-                app:layout_constraintStart_toStartOf="@+id/editTextNumberIdramId"
-                app:layout_constraintTop_toBottomOf="@+id/editTextNumberIdramId" />
-
-            <TextView
-                android:id="@+id/textViewIdramNameErrMsg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textColor="@color/quantum_googred"
-                android:text="@string/write_your_name_as_it_is_written_in_your_idram_account"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="@+id/editTextIDramName"
-                app:layout_constraintTop_toBottomOf="@+id/editTextIDramName" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
