@@ -80,4 +80,5 @@
     <string name="_123456789">123456789</string>
     <string name="write_your_9_digit_id">Write your 9 digit ID</string>
     <string name="write_your_name_as_it_is_written_in_your_idram_account">Write your name as it is written in your Idram account</string>
+    <string name="delete">Delete</string>
 </resources>

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.transformingparking.Constants;
 import com.example.transformingparking.AccountActivities.ProfileActivity;
+import com.example.transformingparking.ParkingActivities.EditParkingActivity;
 import com.example.transformingparking.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -50,8 +51,8 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
      */
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
-        private final TextView descriptionTextView;
+        private final TextView priceView;
+        private final TextView descriptionView;
         private final ImageView imageView;
         private final TextView statusView;
         private final Button clientProfileBtn;
@@ -61,25 +62,25 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
         public ViewHolder(View view) {
             super(view);
             // Define click listener for the ViewHolder's View
-            textView = (TextView) view.findViewById(R.id.price);
+            priceView = (TextView) view.findViewById(R.id.price);
             imageView = (ImageView) view.findViewById(R.id.imageView);
-            descriptionTextView = (TextView) view.findViewById(R.id.description);
+            descriptionView = (TextView) view.findViewById(R.id.description);
             statusView = (TextView) view.findViewById(R.id.textViewStatus);
             clientProfileBtn = (Button) view.findViewById(R.id.buttonClientProfile);
             changeStatusBtn = (Button) view.findViewById(R.id.buttonChangeStatus);
             openOrCloseBtn = (Button) view.findViewById(R.id.buttonOpenOrClose);
         }
 
-        public TextView getTextView() {
-            return textView;
+        public TextView getPriceView() {
+            return priceView;
         }
 
         public ImageView getImageView() {
             return imageView;
         }
 
-        public TextView getDescriptionTextView() {
-            return descriptionTextView;
+        public TextView getDescriptionView() {
+            return descriptionView;
         }
 
         public TextView getStatusView() {
@@ -278,13 +279,13 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
         }
 
         String price = String.format("%s%s", localDataSet.get(position).get("price"), view.getContext().getString(R.string.dram_per_hour));
-        viewHolder.getTextView().setText(price);
+        viewHolder.getPriceView().setText(price);
 
         String description = Objects.requireNonNull(localDataSet.get(position).get("additional_info")).toString();
         if (description.isEmpty()) {
-            viewHolder.getDescriptionTextView().setVisibility(View.GONE);
+            viewHolder.getDescriptionView().setVisibility(View.GONE);
         } else {
-            viewHolder.getDescriptionTextView().setText(description);
+            viewHolder.getDescriptionView().setText(description);
         }
 
         StorageReference imageRef = storageReference.child("parking_pics").child((String) Objects.requireNonNull(localDataSet.get(position).get("id")));
@@ -303,11 +304,29 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
                 progressDialog.cancel();
             }
         });
+
+        viewHolder.getImageView().setOnClickListener(v -> {
+            startEditParkingActivity(Objects.requireNonNull(localDataSet.get(position).get("id")).toString());
+        });
+
+        viewHolder.getDescriptionView().setOnClickListener(v -> {
+            startEditParkingActivity(Objects.requireNonNull(localDataSet.get(position).get("id")).toString());
+        });
+
+        viewHolder.getPriceView().setOnClickListener(v -> {
+            startEditParkingActivity(Objects.requireNonNull(localDataSet.get(position).get("id")).toString());
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return localDataSet.size();
+    }
+
+    private void startEditParkingActivity(String id) {
+        Intent intent = new Intent(context, EditParkingActivity.class);
+        intent.putExtra("parkingId", id);
+        context.startActivity(intent);
     }
 }

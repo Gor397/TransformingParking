@@ -31,9 +31,11 @@
         android:theme="@style/Theme.TransformingParking"
         tools:targetApi="31">
         <activity
-            android:name=".Notifications.NotificationItemActivity"
+            android:name=".ParkingActivities.EditParkingActivity"
             android:exported="false" />
-        <!-- Declare your custom FirebaseMessagingService -->
+        <activity
+            android:name=".Notifications.NotificationItemActivity"
+            android:exported="false" /> <!-- Declare your custom FirebaseMessagingService -->
         <service
             android:name=".Notifications.MyFirebaseMessagingService"
             android:exported="false">
@@ -70,6 +72,7 @@
         <activity
             android:name=".signIn.WriteNameActivty"
             android:exported="false" />
+
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
