@@ -98,12 +98,53 @@ public class PayActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
-                        DocumentSnapshot documentSnapshot = task.getResult();
-                        String receiverID = Objects.requireNonNull(documentSnapshot.get("idramId")).toString();
-                        String receiverName = Objects.requireNonNull(documentSnapshot.get("idramName")).toString();
-                        BigDecimal amount = new BigDecimal(costView.getText().toString().replaceAll("[^0-9]", ""));
+                        DocumentReference docRef = db.collection("parking_spaces").document(parkingId);
 
+                        // Create a map to update the desired field
+                        Map<String, Object> updates = new HashMap<>();
+                        updates.put("status", Constants.PAID);
 
+                        // Perform the update operation
+                        docRef.update(updates)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "Document field successfully updated!");
+                                        Toast.makeText(PayActivity.this, "Paid", Toast.LENGTH_SHORT).show();
+
+                                        db.collection("parking_spaces").document(parkingId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    DocumentSnapshot document = task.getResult();
+                                                    if (document.exists()) {
+                                                        String ownerId = (String) document.get("user_id");
+                                                        NotificationModel notificationModel = new NotificationModel("Parking fee is paid", user.getDisplayName() + " paid parking fee (" + costView.getText().toString() + ")", ownerId);
+                                                        NotificationHelper notificationHelper = new NotificationHelper(getApplicationContext());
+                                                        notificationHelper.makeNotification(notificationModel);
+                                                    } else {
+                                                        // Document does not exist
+                                                        // TODO Handle the case here
+                                                    }
+                                                } else {
+                                                    // Error getting document
+                                                    // TODO Handle the error here
+                                                }
+                                            }
+                                        });
+
+                                        Intent rateIntent = new Intent(PayActivity.this, RateActivity.class);
+                                        rateIntent.putExtra("parkingId", parkingId);
+                                        startActivity(rateIntent);
+                                        finish();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
                     }
                 }
             });
@@ -128,55 +169,5 @@ public class PayActivity extends AppCompatActivity {
         }
 
         return formattedTime.toString().trim();
-    }
-
-    private void doPaymentAndOpenTheExit() {
-        DocumentReference docRef = db.collection("parking_spaces").document(parkingId);
-
-        // Create a map to update the desired field
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("status", Constants.PAID);
-
-        // Perform the update operation
-        docRef.update(updates)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Document field successfully updated!");
-                        Toast.makeText(PayActivity.this, "Paid", Toast.LENGTH_SHORT).show();
-
-                        db.collection("parking_spaces").document(parkingId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    DocumentSnapshot document = task.getResult();
-                                    if (document.exists()) {
-                                        String ownerId = (String) document.get("user_id");
-                                        NotificationModel notificationModel = new NotificationModel("Parking fee is paid", user.getDisplayName() + " paid parking fee (" + costView.getText().toString() + ")", ownerId);
-                                        NotificationHelper notificationHelper = new NotificationHelper(getApplicationContext());
-                                        notificationHelper.makeNotification(notificationModel);
-                                    } else {
-                                        // Document does not exist
-                                        // TODO Handle the case here
-                                    }
-                                } else {
-                                    // Error getting document
-                                    // TODO Handle the error here
-                                }
-                            }
-                        });
-
-                        finish();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error updating document", e);
-                    }
-                });
-
-        Log.i("IDram", "Payment done.");
-        Toast.makeText(this, "Payment done.", Toast.LENGTH_SHORT).show();
     }
 }

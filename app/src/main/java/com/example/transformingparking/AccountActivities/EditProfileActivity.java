@@ -163,7 +163,7 @@ public class EditProfileActivity extends AppCompatActivity {
             updates.put("name", nameView.getText().toString());
 
             docRef.update(updates);
-            Util.setUserName(nameView.getText().toString());
+            Util.setCurrentUserName(nameView.getText().toString());
 
             if (selectedImageUri != null) {
                 uploadProfilePictureToStorage(user.getUid(), selectedImageUri);

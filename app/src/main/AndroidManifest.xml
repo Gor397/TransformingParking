@@ -31,6 +31,9 @@
         android:theme="@style/Theme.TransformingParking"
         tools:targetApi="31">
         <activity
+            android:name=".ParkingActivities.RateActivity"
+            android:exported="false" />
+        <activity
             android:name=".ParkingActivities.EditParkingActivity"
             android:exported="false" />
         <activity

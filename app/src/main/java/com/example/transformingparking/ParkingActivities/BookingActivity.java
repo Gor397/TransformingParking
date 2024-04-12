@@ -4,17 +4,24 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.transformingparking.AccountActivities.ProfileActivity;
+import com.example.transformingparking.ParkingActivities.RatingAdapter.RatingReviewItem;
+import com.example.transformingparking.ParkingActivities.RatingAdapter.RatingsAdapter;
 import com.example.transformingparking.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,10 +31,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -40,6 +50,13 @@ public class BookingActivity extends AppCompatActivity {
     TextView descriptionTitle;
     Button ownerAccBtn;
     Button directionsBtn;
+    Button toggleRatingsButton;
+    CardView ratingsCardView;
+    RatingBar ratingBar;
+
+    RecyclerView ratingsRecyclerView;
+    RatingsAdapter ratingsAdapter;
+    TextView ratingNumber;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -57,6 +74,10 @@ public class BookingActivity extends AppCompatActivity {
         ownerAccBtn = findViewById(R.id.open_profile);
         directionsBtn = findViewById(R.id.directions_btn);
         descriptionTitle = findViewById(R.id.descriptionTitle);
+        toggleRatingsButton = findViewById(R.id.toggle_ratings_btn);
+        ratingsCardView = findViewById(R.id.ratings_cardview);
+        ratingBar = findViewById(R.id.ratingBar2);
+        ratingNumber = findViewById(R.id.textStarsNumber);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -130,7 +151,73 @@ public class BookingActivity extends AppCompatActivity {
                 startActivity(profileIntent);
             }
         });
+
+        ratingsRecyclerView = findViewById(R.id.ratings_recyclerView);
+        ratingsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Initialize your data source for ratings and reviews here
+        List<RatingReviewItem> items = fetchDataAndSetMeanRating();
+
+        ratingsAdapter = new RatingsAdapter(items, getApplicationContext());
+        ratingsRecyclerView.setAdapter(ratingsAdapter);
+
+        toggleRatingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ratingsCardView.getVisibility() == View.GONE) {
+                    ratingsCardView.setVisibility(View.VISIBLE);
+                    toggleRatingsButton.setCompoundDrawablesWithIntrinsicBounds(getDrawable(android.R.drawable.arrow_up_float), null, null, null);
+                    toggleRatingsButton.setText(R.string.hide_reviews);
+                } else {
+                    ratingsCardView.setVisibility(View.GONE);
+                    toggleRatingsButton.setCompoundDrawablesWithIntrinsicBounds(getDrawable(android.R.drawable.arrow_down_float), null, null, null);
+                    toggleRatingsButton.setText(R.string.show_reviews);
+                }
+            }
+        });
     }
+
+    private List<RatingReviewItem> fetchDataAndSetMeanRating() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<RatingReviewItem> items = new ArrayList<>();
+
+        // Assuming a collection of users where each user has a sub-collection of ratings
+        db.collection("parking_spaces").document(markerId).collection("ratings")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            long rating = document.getLong("stars");
+                            String review = document.getString("feedback");
+                            String userId = document.getString("userId");
+
+                            items.add(new RatingReviewItem(rating, review, userId));
+                        }
+
+                        if (items.isEmpty()) {
+                            ratingBar.setVisibility(View.GONE);
+                            ratingNumber.setVisibility(View.GONE);
+                        } else {
+                            float total = 0;
+                            for (RatingReviewItem item : items) {
+                                total += item.getRating();
+                            }
+
+                            float mean_rating = total / items.size();
+
+                            ratingBar.setRating(mean_rating);
+                            ratingNumber.setText(String.format("%.1f", mean_rating));
+                        }
+
+                        ratingsAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d("Firestore", "Error getting documents: ", task.getException());
+                    }
+                });
+
+        return items;
+    }
+
 
     private void setOwner() {
         db.collection("users").document(ownerId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

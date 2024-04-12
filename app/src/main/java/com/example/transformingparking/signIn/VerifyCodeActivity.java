@@ -28,7 +28,6 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -234,7 +233,7 @@ public class VerifyCodeActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     DocumentSnapshot document = task.getResult();
                                     if (document.exists() && document.contains("name")) {
-                                        Util.setUserName(document.getString("name"));
+                                        Util.setCurrentUserName(document.getString("name"));
                                         setUserFCMToken(user);
                                         Intent intent = new Intent(VerifyCodeActivity.this, MainActivity.class);
                                         startActivity(intent);

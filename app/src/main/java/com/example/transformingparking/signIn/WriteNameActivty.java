@@ -3,7 +3,6 @@ package com.example.transformingparking.signIn;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -11,8 +10,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,11 +18,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.transformingparking.MainActivity;
 import com.example.transformingparking.R;
 import com.example.transformingparking.util.Util;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -71,7 +65,7 @@ public class WriteNameActivty extends AppCompatActivity {
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", fullNameEditText.getText().toString());
-        Util.setUserName(fullNameEditText.getText().toString());
+        Util.setCurrentUserName(fullNameEditText.getText().toString());
 
         docRef.update(updates).addOnSuccessListener(aVoid -> {
             Intent intent = new Intent(WriteNameActivty.this, MainActivity.class);
