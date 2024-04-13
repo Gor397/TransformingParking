@@ -49,6 +49,7 @@ public class RatingsAdapter extends RecyclerView.Adapter<RatingsAdapter.ViewHold
         RatingReviewItem item = items.get(position);
         holder.ratingBar.setRating(item.getRating());
         holder.reviewText.setText(item.getReview());
+        holder.timestampText.setText(item.getTimestampString().toString());
 
         db.collection("users").document(item.getUserId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -79,6 +80,7 @@ public class RatingsAdapter extends RecyclerView.Adapter<RatingsAdapter.ViewHold
     static class ViewHolder extends RecyclerView.ViewHolder {
         RatingBar ratingBar;
         TextView reviewText;
+        TextView timestampText;
         Button userBtn;
 
         ViewHolder(View view) {
@@ -86,6 +88,7 @@ public class RatingsAdapter extends RecyclerView.Adapter<RatingsAdapter.ViewHold
             ratingBar = view.findViewById(R.id.ratingBarItem);
             reviewText = view.findViewById(R.id.reviewTextItem);
             userBtn = view.findViewById(R.id.userProfileBtn);
+            timestampText = view.findViewById(R.id.timestampText);
         }
     }
 }

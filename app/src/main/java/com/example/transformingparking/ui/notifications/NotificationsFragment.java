@@ -65,7 +65,7 @@ public class NotificationsFragment extends Fragment {
                 textView.setVisibility(View.VISIBLE);
                 textView.setText(R.string.you_don_t_have_any_notifications_yet);
             } else {
-                SortingAlgorithms.sortListBasedOnTimestamp(notifications);
+                SortingAlgorithms.sortListBasedOnTimestamp(new SortingAlgorithms.MapListWrapper(notifications));
                 adapter = new NotificationAdapter(notifications);
                 recyclerView.setAdapter(adapter);
             }

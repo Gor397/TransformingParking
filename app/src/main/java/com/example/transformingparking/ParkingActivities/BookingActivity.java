@@ -23,10 +23,12 @@ import com.example.transformingparking.AccountActivities.ProfileActivity;
 import com.example.transformingparking.ParkingActivities.RatingAdapter.RatingReviewItem;
 import com.example.transformingparking.ParkingActivities.RatingAdapter.RatingsAdapter;
 import com.example.transformingparking.R;
+import com.example.transformingparking.util.SortingAlgorithms;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,6 +38,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -80,9 +84,7 @@ public class BookingActivity extends AppCompatActivity {
         ratingNumber = findViewById(R.id.textStarsNumber);
 
         Intent intent = getIntent();
-        if (intent != null) {
-            markerId = intent.getStringExtra("markerId");
-        }
+        markerId = intent.getStringExtra("markerId");
 
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading...");
@@ -191,19 +193,29 @@ public class BookingActivity extends AppCompatActivity {
                             String review = document.getString("feedback");
                             String userId = document.getString("userId");
 
-                            items.add(new RatingReviewItem(rating, review, userId));
+                            Timestamp timestamp = document.getTimestamp("timestamp");
+
+                            items.add(new RatingReviewItem(rating, review, userId, timestamp));
                         }
 
                         if (items.isEmpty()) {
                             ratingBar.setVisibility(View.GONE);
                             ratingNumber.setVisibility(View.GONE);
                         } else {
+                            SortingAlgorithms.sortListBasedOnTimestamp(new SortingAlgorithms.RatingReviewItemListWrapper(items));
                             float total = 0;
-                            for (RatingReviewItem item : items) {
+                            int ratings_quantity = items.size();
+                            int ratings_quantity_for_loop = items.size();
+                            for (int i = 0; i < ratings_quantity_for_loop; i++) {
+                                RatingReviewItem item = items.get(i);
                                 total += item.getRating();
+                                if (item.getReview().isEmpty()) {
+                                    items.remove(i);
+                                    ratings_quantity_for_loop--;
+                                }
                             }
 
-                            float mean_rating = total / items.size();
+                            float mean_rating = total / ratings_quantity;
 
                             ratingBar.setRating(mean_rating);
                             ratingNumber.setText(String.format("%.1f", mean_rating));
