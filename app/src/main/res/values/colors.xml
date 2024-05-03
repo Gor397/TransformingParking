@@ -11,4 +11,5 @@
     <color name="dark_orange">#FF8C00</color>
     <color name="bottom_nav_item_color">#FFFFFF</color>
     <color name="colorAccent">#FF03DAC5</color>
+    <color name="my_grey">#6F7789</color>
 </resources>

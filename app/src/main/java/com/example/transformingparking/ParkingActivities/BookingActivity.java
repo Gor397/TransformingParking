@@ -2,11 +2,13 @@ package com.example.transformingparking.ParkingActivities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -15,13 +17,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.transformingparking.AccountActivities.ProfileActivity;
 import com.example.transformingparking.ParkingActivities.RatingAdapter.RatingReviewItem;
-import com.example.transformingparking.ParkingActivities.RatingAdapter.RatingsAdapter;
 import com.example.transformingparking.R;
 import com.example.transformingparking.util.SortingAlgorithms;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,8 +36,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,25 +43,27 @@ import java.util.Objects;
 
 public class BookingActivity extends AppCompatActivity {
     String markerId;
-    String ownerId;
     ImageView imageView;
     TextView priceView;
     TextView descriptionView;
     TextView descriptionTitle;
     Button ownerAccBtn;
     Button directionsBtn;
-    Button toggleRatingsButton;
     CardView ratingsCardView;
     RatingBar ratingBar;
+    private TextView aboutTextView, reviewsTextView, ownerTextView;
+    private FrameLayout fragmentContainer;
 
-    RecyclerView ratingsRecyclerView;
-    RatingsAdapter ratingsAdapter;
     TextView ratingNumber;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseDatabase realtimeDb = FirebaseDatabase.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    String ownerId;
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +71,8 @@ public class BookingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_booking_view);
 
         priceView = findViewById(R.id.price1);
-        descriptionView = findViewById(R.id.description1);
         imageView = findViewById(R.id.imageView);
-        ownerAccBtn = findViewById(R.id.open_profile);
-        directionsBtn = findViewById(R.id.directions_btn);
-        descriptionTitle = findViewById(R.id.descriptionTitle);
-        toggleRatingsButton = findViewById(R.id.toggle_ratings_btn);
-        ratingsCardView = findViewById(R.id.ratings_cardview);
+        directionsBtn = findViewById(R.id.directions_btn);;;
         ratingBar = findViewById(R.id.ratingBar2);
         ratingNumber = findViewById(R.id.textStarsNumber);
 
@@ -98,24 +91,15 @@ public class BookingActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         int price = Integer.parseInt(Objects.requireNonNull(document.get("price")).toString());
-                        String description = (String) document.get("additional_info");
                         StorageReference imageRef = storage.getReference().child("parking_pics").child(markerId);
                         Map<String, Double> latlng = (Map<String, Double>) document.get("latlng");
                         assert latlng != null;
                         Double latitude = latlng.get("latitude");
                         Double longitude = latlng.get("longitude");
 
-                        ownerId = (String) document.get("user_id");
-                        setOwner();
+                        setOwnerId((String) document.get("user_id"));
 
-                        priceView.setText(MessageFormat.format("{0}{1}{2}", getString(R.string.price_with2points), price, getString(R.string.dram_per_hour)));
-                        assert description != null;
-                        if (description.isEmpty()) {
-                            descriptionTitle.setVisibility(View.GONE);
-                            descriptionView.setVisibility(View.GONE);
-                        } else {
-                            descriptionView.setText(description);
-                        }
+                        priceView.setText(MessageFormat.format("{0}{1}", price, getString(R.string.amd_per_hour)));
                         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
@@ -145,38 +129,89 @@ public class BookingActivity extends AppCompatActivity {
             }
         });
 
-        ownerAccBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent profileIntent = new Intent(BookingActivity.this, ProfileActivity.class);
-                profileIntent.putExtra("userId", ownerId);
-                startActivity(profileIntent);
-            }
-        });
-
-        ratingsRecyclerView = findViewById(R.id.ratings_recyclerView);
-        ratingsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         // Initialize your data source for ratings and reviews here
         List<RatingReviewItem> items = fetchDataAndSetMeanRating();
 
-        ratingsAdapter = new RatingsAdapter(items, getApplicationContext());
-        ratingsRecyclerView.setAdapter(ratingsAdapter);
+        aboutTextView = findViewById(R.id.about);
+        reviewsTextView = findViewById(R.id.reviews);
+        ownerTextView = findViewById(R.id.owner);
+        fragmentContainer = findViewById(R.id.fragmentContainer);
 
-        toggleRatingsButton.setOnClickListener(new View.OnClickListener() {
+        // Set initial fragment
+        AboutFragment aboutFragment = new AboutFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("markerId", markerId);
+
+        // Set the Bundle as arguments for the fragment
+        aboutFragment.setArguments(bundle);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, aboutFragment).commit();
+        activateInNavbar(0);
+
+        aboutTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ratingsCardView.getVisibility() == View.GONE) {
-                    ratingsCardView.setVisibility(View.VISIBLE);
-                    toggleRatingsButton.setCompoundDrawablesWithIntrinsicBounds(getDrawable(android.R.drawable.arrow_up_float), null, null, null);
-                    toggleRatingsButton.setText(R.string.hide_reviews);
-                } else {
-                    ratingsCardView.setVisibility(View.GONE);
-                    toggleRatingsButton.setCompoundDrawablesWithIntrinsicBounds(getDrawable(android.R.drawable.arrow_down_float), null, null, null);
-                    toggleRatingsButton.setText(R.string.show_reviews);
-                }
+                AboutFragment aboutFragment = new AboutFragment();
+                aboutFragment.setArguments(bundle);
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, aboutFragment).commit();
+                activateInNavbar(0);
             }
         });
+
+        reviewsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ReviewsFragment reviewsFragment = new ReviewsFragment();
+                reviewsFragment.setArguments(bundle);
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewsFragment).commit();
+                activateInNavbar(1);
+            }
+        });
+
+        ownerTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OwnerFragment ownerFragment = new OwnerFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("ownerId", ownerId);
+
+                // Set the Bundle as arguments for the fragment
+                ownerFragment.setArguments(bundle);
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, ownerFragment).commit();
+                activateInNavbar(2);
+            }
+        });
+    }
+
+    private void activateInNavbar(int section) {
+        aboutTextView.setTextColor(getColor(R.color.my_grey));
+        aboutTextView.setTypeface(null, Typeface.NORMAL);
+
+        reviewsTextView.setTextColor(getColor(R.color.my_grey));
+        reviewsTextView.setTypeface(null, Typeface.NORMAL);
+
+        ownerTextView.setTextColor(getColor(R.color.my_grey));
+        ownerTextView.setTypeface(null, Typeface.NORMAL);
+
+        switch (section) {
+            case 0:
+                aboutTextView.setTextColor(getColor(R.color.black));
+                aboutTextView.setTypeface(null, Typeface.BOLD);
+                break;
+            case 1:
+                reviewsTextView.setTextColor(getColor(R.color.black));
+                reviewsTextView.setTypeface(null, Typeface.BOLD);
+                break;
+            case 2:
+                ownerTextView.setTextColor(getColor(R.color.black));
+                ownerTextView.setTypeface(null, Typeface.BOLD);
+                break;
+        }
     }
 
     private List<RatingReviewItem> fetchDataAndSetMeanRating() {
@@ -221,32 +256,12 @@ public class BookingActivity extends AppCompatActivity {
                             ratingNumber.setText(String.format("%.1f", mean_rating));
                         }
 
-                        ratingsAdapter.notifyDataSetChanged();
                     } else {
                         Log.d("Firestore", "Error getting documents: ", task.getException());
                     }
                 });
 
         return items;
-    }
-
-
-    private void setOwner() {
-        db.collection("users").document(ownerId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        String name = (String) document.get("name");
-                        ownerAccBtn.setText(name);
-                    }
-                } else {
-                    // Error getting document
-                    // TODO Handle the error here
-                }
-            }
-        });
     }
 
     private void openDirections(double lat, double lng) {

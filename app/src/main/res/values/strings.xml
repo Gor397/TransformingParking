@@ -53,7 +53,7 @@
         %s!
     </string>
     <string name="price_with2points">"Price: "</string>
-    <string name="dram_per_hour">" dram/hour"</string>
+    <string name="amd_per_hour">" AMD/hour"</string>
     <string name="google_maps_app_is_not_installed">Google Maps app is not installed</string>
     <string name="invalid_verification_code">Invalid Verification Code</string>
     <string name="authentication_failed">"Authentication failed: "</string>
@@ -86,4 +86,7 @@
     <string name="ratings_amp_reviews"><![CDATA[Ratings & Reviews]]></string>
     <string name="show_reviews">Show reviews</string>
     <string name="hide_reviews">Hide reviews</string>
+    <string name="no_description_about_this_garage">No description about this garage</string>
+    <string name="there_are_no_reviews_for_this_garage">There are no reviews for this garage</string>
+    <string name="description">Description</string>
 </resources>

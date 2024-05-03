@@ -278,7 +278,7 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
             viewHolder.getOpenOrCloseBtn().setVisibility(View.GONE);
         }
 
-        String price = String.format("%s%s", localDataSet.get(position).get("price"), view.getContext().getString(R.string.dram_per_hour));
+        String price = String.format("%s%s", localDataSet.get(position).get("price"), view.getContext().getString(R.string.amd_per_hour));
         viewHolder.getPriceView().setText(price);
 
         String description = Objects.requireNonNull(localDataSet.get(position).get("additional_info")).toString();

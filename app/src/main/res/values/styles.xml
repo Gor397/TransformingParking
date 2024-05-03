@@ -8,4 +8,9 @@
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
     </style>
+
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">#CCCCCC</item>
+        <item name="colorControlActivated">#1F74B1</item>
+    </style>
 </resources>
