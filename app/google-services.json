@@ -42,6 +42,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816216769608:android:57404bdb750dfc2d31447d",
+        "android_client_info": {
+          "package_name": "com.transformingParking.transformingparking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816216769608-eq92hjdfajbqkbn444jfvp123dgm80m5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLIl5VvjbE4LmxfSZmPxVwDBtNZqKIwXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "816216769608-eq92hjdfajbqkbn444jfvp123dgm80m5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

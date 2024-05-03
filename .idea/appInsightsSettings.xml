@@ -8,8 +8,8 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.example.transformingparking" />
-                  <option name="mobileSdkAppId" value="1:816216769608:android:d1e383330e82db0c31447d" />
+                  <option name="appId" value="com.transformingParking.transformingparking" />
+                  <option name="mobileSdkAppId" value="1:816216769608:android:57404bdb750dfc2d31447d" />
                   <option name="projectId" value="parking-f4379" />
                   <option name="projectNumber" value="816216769608" />
                 </ConnectionSetting>

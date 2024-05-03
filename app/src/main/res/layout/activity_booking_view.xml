@@ -140,10 +140,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:theme="@style/RatingBar"
-                        android:layout_marginStart="-26dp"
+                        android:layout_marginStart="-46dp"
                         android:isIndicator="true"
-                        android:scaleX=".7"
-                        android:scaleY=".7"
+                        android:scaleX=".5"
+                        android:scaleY=".5"
                         app:layout_constraintBottom_toBottomOf="@+id/textStarsNumber"
                         app:layout_constraintStart_toEndOf="@+id/textStarsNumber"
                         app:layout_constraintTop_toTopOf="@+id/textStarsNumber" />
@@ -154,7 +154,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
                         android:text="3.4"
-                        android:textSize="36sp"
+                        android:textSize="24sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/locationText" />
 

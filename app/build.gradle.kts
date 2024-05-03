@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.transformingparking"
+    namespace = "com.transformingParking.transformingparking"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.transformingparking"
+        applicationId = "com.transformingParking.transformingparking"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

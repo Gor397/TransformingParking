@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.transformingparking.ui.home.HomeFragment"
+        android:name="com.transformingParking.transformingparking.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.example.transformingparking.ui.myProfile.MyProfileFragment"
+        android:name="com.transformingParking.transformingparking.ui.myProfile.MyProfileFragment"
         android:label="@string/title_my_profile"
         tools:layout="@layout/fragment_my_profile" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.example.transformingparking.ui.notifications.NotificationsFragment"
+        android:name="com.transformingParking.transformingparking.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 </navigation>
