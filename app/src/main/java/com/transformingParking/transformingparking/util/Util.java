@@ -51,7 +51,7 @@ public class Util {
 
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            if (addresses != null && addresses.size() > 0) {
+            if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
                 String city = address.getLocality();
                 String country = address.getCountryName();
