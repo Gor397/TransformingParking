@@ -2,7 +2,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
     android:fillViewport="true">
 
     <LinearLayout
@@ -17,7 +16,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:text="Enter Your 6-Digit Code"
-            android:textColor="#FFFFFF"
             android:textSize="28sp"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal" />
@@ -27,10 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="#1E1E1E"
             android:padding="16dp"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#B0BEC5"
             android:gravity="center"
             android:hint="-  -  -  -  -  -"
             android:inputType="number"

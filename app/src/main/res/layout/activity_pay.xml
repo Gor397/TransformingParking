@@ -5,7 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
     tools:context=".ParkingActivities.PayActivity">
 
     <TextView
@@ -15,7 +14,6 @@
         android:layout_marginTop="32dp"
         android:text="Time"
         android:textSize="28sp"
-        android:textColor="@color/quantum_grey300"
         app:layout_constraintBottom_toTopOf="@+id/textViewCost"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -39,7 +37,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="68dp"
         android:text="Cost"
-        android:textColor="@color/quantum_grey300"
         android:textSize="38sp"
         app:layout_constraintBottom_toTopOf="@+id/buttonPay"
         app:layout_constraintEnd_toEndOf="parent"

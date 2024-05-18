@@ -69,7 +69,10 @@ public class ReviewsFragment extends Fragment {
 
                             Timestamp timestamp = document.getTimestamp("timestamp");
 
-                            items.add(new RatingReviewItem(rating, review, userId, timestamp));
+                            if (review == null || !review.isEmpty()) {
+                                assert timestamp != null;
+                                items.add(new RatingReviewItem(rating, review, userId, timestamp));
+                            }
                         }
 
                         if (items.isEmpty()) {

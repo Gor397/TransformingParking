@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/cardview_dark_background"
+        android:background="@color/cardview_light_background"
         android:padding="16dp">
 
         <TextView
@@ -23,7 +23,7 @@
             android:padding="8dp"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@color/quantum_purple50"
+            android:textColor="@color/quantum_purple900"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@color/quantum_grey500"
+            android:textColor="@color/quantum_greyblack1000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewMessage" />
 

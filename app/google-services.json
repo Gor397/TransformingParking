@@ -1,74 +1,26 @@
 {
   "project_info": {
-    "project_number": "816216769608",
-    "firebase_url": "https://parking-f4379-default-rtdb.firebaseio.com",
-    "project_id": "parking-f4379",
-    "storage_bucket": "parking-f4379.appspot.com"
+    "project_number": "930762364313",
+    "project_id": "transforming-parking-ef253",
+    "storage_bucket": "transforming-parking-ef253.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:816216769608:android:d1e383330e82db0c31447d",
-        "android_client_info": {
-          "package_name": "com.example.transformingparking"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "816216769608-s1ovnfddfkq231rmj5l3v50msd6u5gh7.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.transformingparking",
-            "certificate_hash": "61e0449a1e6e6ab75a0a61e5839a7a050bbf9261"
-          }
-        },
-        {
-          "client_id": "816216769608-eq92hjdfajbqkbn444jfvp123dgm80m5.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCLIl5VvjbE4LmxfSZmPxVwDBtNZqKIwXI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "816216769608-eq92hjdfajbqkbn444jfvp123dgm80m5.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:816216769608:android:57404bdb750dfc2d31447d",
+        "mobilesdk_app_id": "1:930762364313:android:37e6dc21199de6203bef08",
         "android_client_info": {
           "package_name": "com.transformingParking.transformingparking"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "816216769608-eq92hjdfajbqkbn444jfvp123dgm80m5.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCLIl5VvjbE4LmxfSZmPxVwDBtNZqKIwXI"
+          "current_key": "AIzaSyBAQV-JHjRh1CCWkB2VRnolrIQiOUdAVR8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "816216769608-eq92hjdfajbqkbn444jfvp123dgm80m5.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

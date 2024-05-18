@@ -2,7 +2,7 @@ package com.transformingParking.transformingparking;
 
 public class Constants {
     public static final int CROP_IMAGE_REQUEST_CODE = 1;
-    public static final String FCM_SERVER_KEY = "AAAAvgpPhEg:APA91bGr4_WUL-g2CcXbc9KcTw99otvgyUJFWeUBjfYhbrVax7Xv6dcoDuwr88nu68Dd4hDXbf7pz2kVnPSDLZ6gLiSe_uc7SCNo0KmwZQ-Sjiq6Uskiy3IlW3cS7-lPkoesx1U5VH6R";
+    public static final String FCM_SERVER_KEY = "AAAA2LXClZk:APA91bEyot13wLogAPQHRNas8AYXfEwxwJTti8PsdVTOeVgF3w1ptYCCrMjJnjzjojhib4GS5WC2JVdxeVMsulRsTG-rDKGpt_896N4PKhe8FTdPR0MsiCngkMG15QYBB9yYprKnsz4A";
 
     // Server and hardware
     public static String SERVER_URL = "https://parking-server.simonyan-gor-397.workers.dev/";

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -42,14 +43,31 @@
         android:textColor="#FFFFFF"
         android:textColorHint="#B0B0B0"/>
 
-    <Button
-        android:id="@+id/buttonSubmit"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextReview"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
-        android:text="@string/submit"
-        android:backgroundTint="@color/colorAccent"/>
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:background="@drawable/review_submit_button_background"
+            android:backgroundTint="@color/quantum_grey"
+            android:layout_marginEnd="10dp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit"
+            android:background="@drawable/review_submit_button_background"
+            android:textColor="@color/black"
+            android:enabled="false"/>
+    </LinearLayout>
 
 </RelativeLayout>

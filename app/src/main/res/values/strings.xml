@@ -17,7 +17,7 @@
     <string name="submit">Submit</string>
     <string name="additional_info">Additional info</string>
     <string name="eg_phone_number_123456789">Eg. Phone number: +123456789</string>
-    <string name="price_per_hour_dram">Price per hour (DRAM)</string>
+    <string name="price_per_hour_amd">Price per hour (AMD)</string>
     <string name="add_parking">Add parking</string>
     <string name="back">Back</string>
     <string name="next">Next</string>
@@ -68,7 +68,7 @@
     <string name="this_number_is_already_used_in_another_account">This number is already used in another account</string>
     <string name="delete_account">Delete Account</string>
     <string name="sign_out">Sign Out</string>
-    <string name="dram">dram</string>
+    <string name="amd">AMD</string>
     <string name="to_exit_the_garage_parking_spot_scan_the_qr_code_again_a_payment_window_will_then_open_once_payment_is_completed_the_device_will_open_the_entry">To exit the garage/parking spot, scan the QR code again. A payment window will then open. Once payment is completed, the device will open the entry.</string>
     <string name="default_notification_channel_id">your_channel_id</string>
     <string name="you_don_t_have_any_notifications_yet">You don\'t have any notifications yet</string>
@@ -89,4 +89,5 @@
     <string name="no_description_about_this_garage">No description about this garage</string>
     <string name="there_are_no_reviews_for_this_garage">There are no reviews for this garage</string>
     <string name="description">Description</string>
+    <string name="cancel">Cancel</string>
 </resources>

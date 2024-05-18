@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
     android:fillViewport="true"
     tools:context=".signIn.SignInActivity">
 
@@ -17,14 +16,12 @@
             android:id="@+id/editTextPhoneNumber"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#1E1E1E"
             android:hint="(+132)12-34-56"
             android:inputType="phone"
             android:paddingStart="16dp"
             android:paddingTop="12dp"
             android:paddingEnd="16dp"
             android:paddingBottom="12dp"
-            android:textColor="#FFFFFF"
             android:textColorHint="#ABA7A7"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,7 +32,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Phone Number"
-            android:textColor="#B0BEC5"
             app:layout_constraintStart_toStartOf="@+id/editTextPhoneNumber"
             app:layout_constraintTop_toBottomOf="@+id/editTextPhoneNumber" />
 

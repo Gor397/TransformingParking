@@ -12,22 +12,27 @@
 
         <Button
             android:id="@+id/sign_out_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="36dp"
-            android:layout_marginTop="24dp"
+            android:layout_width="176dp"
+            android:layout_height="67dp"
             android:text="@string/sign_out"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.383" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/delete_acc_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="225dp"
+            android:layout_height="55dp"
             android:layout_marginTop="20dp"
-            android:text="@string/delete_account"
             android:background="@drawable/delete_acc_button_background"
             android:padding="12dp"
+            android:text="@string/delete_account"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@+id/sign_out_btn"
             app:layout_constraintStart_toStartOf="@+id/sign_out_btn"
             app:layout_constraintTop_toBottomOf="@+id/sign_out_btn" />
     </androidx.constraintlayout.widget.ConstraintLayout>

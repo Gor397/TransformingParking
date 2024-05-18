@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
     tools:context=".ParkingActivities.AddParkingActivity">
 
     <ScrollView
@@ -23,9 +22,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="92dp"
-                android:text="@string/price_per_hour_dram"
+                android:text="@string/price_per_hour_amd"
                 android:textSize="18sp"
-                android:textColor="@color/quantum_grey300"
+                android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/pic" />
 
@@ -56,7 +55,6 @@
                 android:layout_marginTop="28dp"
                 android:layout_marginHorizontal="8dp"
                 android:textColorHint="@color/quantum_grey600"
-                android:textColor="@color/quantum_grey300"
                 android:hint="@string/eg_phone_number_123456789"
                 app:layout_constraintTop_toBottomOf="@+id/textView5"
                 tools:layout_editor_absoluteX="0dp" />
@@ -69,7 +67,7 @@
                 android:layout_marginTop="24dp"
                 android:text="@string/additional_info"
                 android:textSize="20sp"
-                android:textColor="@color/quantum_grey300"
+                android:textColor="@color/quantum_greyblack1000"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/price" />
 

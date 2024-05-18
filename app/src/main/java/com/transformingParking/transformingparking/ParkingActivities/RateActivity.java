@@ -1,7 +1,9 @@
 package com.transformingParking.transformingparking.ParkingActivities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
@@ -29,6 +31,7 @@ public class RateActivity extends AppCompatActivity {
     private RatingBar ratingBar;
     private EditText editTextReview;
     private Button buttonSubmit;
+    private Button buttonCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,18 @@ public class RateActivity extends AppCompatActivity {
         editTextReview = findViewById(R.id.editTextReview);
         buttonSubmit = findViewById(R.id.buttonSubmit);
 
+        ratingBar.setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
+            buttonSubmit.setEnabled(rating > 0);
+        });
+
         buttonSubmit.setOnClickListener(v -> submitRating());
+
+        buttonCancel = findViewById(R.id.buttonCancel);
+
+        buttonCancel.setOnClickListener(v -> {
+            Intent intent = new Intent(RateActivity.this, MapActivity.class); // Replace 'MapActivity' with your actual map activity's class
+            startActivity(intent);
+        });
     }
 
     private void submitRating() {

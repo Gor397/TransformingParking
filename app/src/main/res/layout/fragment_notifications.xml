@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="80dp"
-    tools:context=".ui.notifications.NotificationsFragment"
-    android:background="@color/black">
+    tools:context=".ui.notifications.NotificationsFragment">
 
     <TextView
         android:id="@+id/text_notifications"
@@ -18,7 +17,6 @@
         android:textAlignment="center"
         android:textSize="20sp"
         android:visibility="gone"
-        android:textColor="@color/quantum_grey300"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

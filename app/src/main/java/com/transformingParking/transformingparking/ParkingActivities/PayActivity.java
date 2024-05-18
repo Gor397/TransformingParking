@@ -73,7 +73,7 @@ public class PayActivity extends AppCompatActivity {
                     if (document.exists()) {
                         int price = Integer.parseInt(Objects.requireNonNull(document.get("price")).toString());
                         float cost = ((float) price) * (hours + (float) minutes / 60);
-                        costView.setText(Math.round(cost) + getString(R.string.dram));
+                        costView.setText(Math.round(cost) + " " + getString(R.string.amd));
                         progressDialog.cancel();
                     } else {
                         // Document does not exist

@@ -58,8 +58,6 @@ public class MyProfileFragment extends Fragment {
     private ImageButton editBtn;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        MyProfileViewModel myProfileViewModel = new ViewModelProvider(this).get(MyProfileViewModel.class);
-
         binding = FragmentMyProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 

@@ -5,7 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
     tools:context=".signIn.WriteNameActivty">
 
     <androidx.appcompat.widget.AppCompatButton
@@ -30,12 +29,9 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="45dp"
         android:layout_marginEnd="32dp"
-        android:background="#1E1E1E"
         android:hint="Enter your full name"
         android:inputType="text"
         android:padding="16dp"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#B0BEC5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -46,7 +42,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="Full Name"
-        android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/editTextFullName"
         app:layout_constraintStart_toStartOf="@+id/editTextFullName" />
