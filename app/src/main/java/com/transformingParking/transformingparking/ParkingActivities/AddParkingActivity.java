@@ -36,6 +36,7 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.transformingParking.transformingparking.BuildConfig;
 import com.transformingParking.transformingparking.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -88,7 +89,7 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
         back_btn2 = findViewById(R.id.back_btn2);
         back_btn2.setOnClickListener(v -> finish());
 
-        Places.initialize(getApplicationContext(), System.getenv("PLACES_API_KEY"));
+        Places.initialize(getApplicationContext(), BuildConfig.PLACES_API_KEY);
         autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG));
 
@@ -125,72 +126,6 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
 
 //        searchView = findViewById(R.id.search_view);
         nextBtn = findViewById(R.id.next_btn);
-
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                String location = searchView.getQuery().toString();
-//
-//                List<Address> addressList = null;
-//
-//                Geocoder geocoder = new Geocoder(AddParkingActivity.this);
-//                try {
-//                    addressList = geocoder.getFromLocationName(location, 1);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                try {
-//                    assert addressList != null;
-//                    Address address = addressList.get(0);
-//                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-//                    if (marker != null) {
-//                        marker.remove();
-//                    } else {
-//                        nextBtn.setEnabled(true);
-//                    }
-//                    marker = map.addMarker(new MarkerOptions().position(latLng));
-//
-//                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-//                } catch (IndexOutOfBoundsException | AssertionError e) {
-//                    Toast.makeText(AddParkingActivity.this, "Not Found", Toast.LENGTH_SHORT).show();
-//                }
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                return false;
-//            }
-//        });
-
-//        try {
-//            Places.initialize(getApplicationContext(), "AIzaSyARE9BF99v3T3zM_GET5KaWXx0R84sezn0");
-//        } catch (Exception e) {
-//            // TODO
-//            // Handle initialization errors
-//        }
-//
-//        autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-//        assert autocompleteFragment != null;
-//        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-//        autocompleteFragment.setOnPlaceSelectedListener(new
-//                                                                PlaceSelectionListener() {
-//                                                                    @Override
-//                                                                    public void onPlaceSelected(@NonNull Place place) {
-//                                                                        // Handle the selected place
-//                                                                        LatLng latLng = place.getLatLng();
-//                                                                        // Move the camera to the selected place
-//                                                                        assert latLng != null;
-//                                                                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-//                                                                    }
-//
-//                                                                    @Override
-//                                                                    public void onError(@NonNull Status status) {
-//                                                                        // TODO: Handle the error.
-//                                                                        Log.i("AddParking", "An error occurred: " + status);
-//                                                                    }
-//                                                                });
 
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override

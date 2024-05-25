@@ -7,6 +7,11 @@ android {
     namespace = "com.transformingParking.transformingparking"
     compileSdk = 34
 
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.transformingParking.transformingparking"
         minSdk = 26
@@ -15,6 +20,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        resValue("string", "GOOGLE_API_KEY", project.properties["GOOGLE_API_KEY"].toString())
+        buildConfigField("String", "PLACES_API_KEY", "\"${project.properties["PLACES_API_KEY"]}\"")
+        buildConfigField("String", "FCM_SERVER_KEY", "\"${project.properties["FCM_SERVER_KEY"]}\"")
     }
 
     buildTypes {
@@ -30,13 +39,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
-
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
