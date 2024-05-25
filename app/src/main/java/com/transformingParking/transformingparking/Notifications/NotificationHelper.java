@@ -96,7 +96,7 @@ public class NotificationHelper {
             RequestBody rBody = RequestBody.create(mediaType, whole0bj.toString());
             Request request = new Request.Builder().url("https://fcm.googleapis.com/fcm/send")
                     .post(rBody)
-                    .addHeader("Authorization", "key=" + Constants.FCM_SERVER_KEY)
+                    .addHeader("Authorization", "key=" + context.getString(Constants.FCM_SERVER_KEY_REC_INT))
                     .addHeader("Content-Type", "application/json")
                     .build();
 

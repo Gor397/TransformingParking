@@ -20,10 +20,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        resValue("string", "GOOGLE_API_KEY", project.properties["GOOGLE_API_KEY"].toString())
-        buildConfigField("String", "PLACES_API_KEY", "\"${project.properties["PLACES_API_KEY"]}\"")
-        buildConfigField("String", "FCM_SERVER_KEY", "\"${project.properties["FCM_SERVER_KEY"]}\"")
     }
 
     buildTypes {

@@ -1,8 +1,10 @@
 package com.transformingParking.transformingparking;
 
+import android.content.Context;
+
 public class Constants {
     public static final int CROP_IMAGE_REQUEST_CODE = 1;
-    public static final String FCM_SERVER_KEY = BuildConfig.FCM_SERVER_KEY;
+    public static final int FCM_SERVER_KEY_REC_INT = R.string.PLACES_API_KEY;
 
     // Server and hardware
     public static String SERVER_URL = "https://parking-server.simonyan-gor-397.workers.dev/";

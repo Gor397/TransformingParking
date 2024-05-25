@@ -89,7 +89,8 @@ public class AddParkingActivity extends AppCompatActivity implements OnMapReadyC
         back_btn2 = findViewById(R.id.back_btn2);
         back_btn2.setOnClickListener(v -> finish());
 
-        Places.initialize(getApplicationContext(), BuildConfig.PLACES_API_KEY);
+        Log.d("API_KEY", getString(R.string.PLACES_API_KEY));
+        Places.initialize(getApplicationContext(), getString(R.string.PLACES_API_KEY));
         autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG));
 
