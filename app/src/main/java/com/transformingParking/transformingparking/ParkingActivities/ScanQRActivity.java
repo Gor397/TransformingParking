@@ -132,7 +132,7 @@ public class ScanQRActivity extends AppCompatActivity {
                                 DocumentSnapshot document = task.getResult();
                                 if (document.exists()) {
                                     String ownerId = (String) document.get("user_id");
-                                    NotificationModel notificationModel = new NotificationModel("You've got a new client", user.getDisplayName() + " rented your garage", ownerId);
+                                    NotificationModel notificationModel = new NotificationModel("You've got a new client", user.getDisplayName() + " rented your garage", ownerId, user.getUid());
                                     NotificationHelper notificationHelper = new NotificationHelper(getApplicationContext());
                                     notificationHelper.makeNotification(notificationModel);
                                 } else {

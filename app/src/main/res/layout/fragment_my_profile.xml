@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="60dp"
+    android:layout_marginTop="12dp"
     tools:context=".ui.myProfile.MyProfileFragment">
 
     <androidx.core.widget.NestedScrollView

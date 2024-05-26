@@ -1,5 +1,6 @@
 package com.transformingParking.transformingparking.ParkingActivities;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -27,13 +28,31 @@ public class MapActivity extends AppCompatActivity {
         binding = ActivityMapBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_profile, R.id.navigation_notifications)
-                .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_map);
-//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            if (intent.hasExtra("fragment")) {
+                String receivedString = intent.getStringExtra("fragment");
+
+                selectFragment(receivedString, navController);
+            }
+        }
+    }
+
+    private void selectFragment(String receivedString, NavController navController) {
+        switch (receivedString) {
+            case "navigation_home":
+                navController.navigate(R.id.navigation_home);
+                break;
+            case "navigation_notifications":
+                navController.navigate(R.id.navigation_notifications);
+                break;
+            case "navigation_profile":
+                navController.navigate(R.id.navigation_profile);
+                break;
+        }
     }
 
     @Override

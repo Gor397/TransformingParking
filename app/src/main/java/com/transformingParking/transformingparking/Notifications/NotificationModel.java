@@ -11,17 +11,18 @@ public class NotificationModel {
     private String title;
     private String ownerId;
     private String timestamp;
-    private String type;
+    private String senderId;
 
     public NotificationModel() {
 
     }
 
-    public NotificationModel(String title, String message, String ownerId) {
+    public NotificationModel(String title, String message, String ownerId, String senderId) {
         this.title = title;
         this.message = message;
         this.ownerId = ownerId;
         this.timestamp = getCurrentTimestamp();
+        this.senderId = senderId;
     }
 
     public String getMessage() {
@@ -62,6 +63,14 @@ public class NotificationModel {
 
     public void setNotificationId(String notificationId) {
         this.notificationId = notificationId;
+    }
+
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
     }
 
     @SuppressLint("SimpleDateFormat")

@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.transformingParking.transformingparking.MainActivity;
+import com.transformingParking.transformingparking.ParkingActivities.MapActivity;
 import com.transformingParking.transformingparking.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,8 +47,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     
     private void sendNotification(String title, String body) {
         Log.d("MyFirebaseMessagingService", "sendNotification: Method started");
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MapActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("fragment", "navigation_notifications");
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_IMMUTABLE);
 

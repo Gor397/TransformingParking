@@ -114,7 +114,7 @@ public class PayActivity extends AppCompatActivity {
                                                     DocumentSnapshot document = task.getResult();
                                                     if (document.exists()) {
                                                         String ownerId = (String) document.get("user_id");
-                                                        NotificationModel notificationModel = new NotificationModel("Parking fee is paid", user.getDisplayName() + " paid parking fee (" + costView.getText().toString() + ")", ownerId);
+                                                        NotificationModel notificationModel = new NotificationModel("Parking fee is paid", user.getDisplayName() + " paid parking fee (" + costView.getText().toString() + ")", ownerId, user.getUid());
                                                         NotificationHelper notificationHelper = new NotificationHelper(getApplicationContext());
                                                         notificationHelper.makeNotification(notificationModel);
                                                     } else {
